@@ -202,8 +202,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // ⚠️ นำ URL ของ Web App ที่ได้จาก Google Apps Script มาวางตรงนี้
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2Mp2JNYoEI3WMEXo9l7jRTVjmWhDh6k0ylfrRp0aTQsfFEl6mVeOwCrz96N6lvGNEXg/exec';
+  // ⚠️ วาง URL ของ Apps Script ที่คัดลอกมา ตรงเครื่องหมายคำพูดนี้
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9eBaHaodiWWuuy4GtOGg2GnJ_u3mQAbDfGVFXgHRiYDButFB3xt2yp8-xxsX9m1JBdA/exec';
 
   const PRODUCTS = [
     { code: '20000754', name: 'อเมริกาโน', isOrange: false },
@@ -357,15 +357,23 @@
     document.getElementById('reportLoader').classList.remove('d-none');
     document.getElementById('tableContainer').classList.add('d-none');
 
-    fetch(`${SCRIPT_URL}?action=getReport&yearMonth=${yearMonth}`)
-      .then(res => res.json())
-      .then(data => {
-        renderReportTable(data);
-      })
-      .catch(err => {
-        alert('โหลดรายงานไม่สำเร็จ: ' + err);
-        document.getElementById('reportLoader').classList.add('d-none');
-      });
+    const payload = {
+      action: 'getReport',
+      yearMonth: yearMonth
+    };
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+      renderReportTable(data);
+    })
+    .catch(err => {
+      alert('โหลดรายงานไม่สำเร็จ: ' + err);
+      document.getElementById('reportLoader').classList.add('d-none');
+    });
   }
 
   function renderReportTable(data) {
