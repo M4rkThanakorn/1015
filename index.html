@@ -47,6 +47,37 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 16px;
     }
 
+    /* URL Config Box */
+    .url-box {
+      border: 1px solid #bfdbfe;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .url-box-header {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .url-box-title { font-size: 0.9rem; font-weight: 600; color: var(--primary); }
+    .url-status { font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
+    .url-ok { background: #dcfce7; color: #166534; }
+    .url-missing { background: #fee2e2; color: #991b1b; }
+    .url-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .url-input {
+      flex: 1; min-width: 220px; padding: 9px 12px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 0.88rem; background: #fff;
+    }
+    .btn-save-url {
+      padding: 9px 14px; border: none; border-radius: 8px; background: var(--primary);
+      color: white; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-reset-url {
+      padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff;
+      color: #475569; font-size: 0.85rem; font-weight: 500; cursor: pointer;
+    }
+    .url-note { font-size: 0.76rem; color: var(--muted); margin-top: 6px; }
+
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .form-group label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 4px; color: #475569; }
     .form-group input, .form-group select {
@@ -107,8 +138,7 @@
     .status-ok { display: block; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
     .status-err { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-    /* Recent logs */
-    .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
     .log-title { font-size: 1rem; font-weight: 600; margin: 0; }
     .log-card {
       border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 10px;
@@ -124,7 +154,6 @@
       padding: 4px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
     }
 
-    /* Report Table */
     .report-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .btn-action {
       padding: 9px 14px; border: none; border-radius: 8px; font-size: 0.9rem;
@@ -180,6 +209,25 @@
   <!-- TAB 1: FORM -->
   <div id="tab-form">
     <div class="card">
+      <!-- ช่องตั้งค่า Web App URL บนหน้าเว็บ -->
+      <div class="url-box no-print">
+        <div class="url-box-header">
+          <span class="url-box-title">🔗 ตั้งค่า Web App URL (Google Apps Script)</span>
+          <span id="url-badge" class="url-status url-missing">ยังไม่ได้ตั้งค่า</span>
+        </div>
+        <div class="url-row">
+          <input
+            type="url"
+            id="input-script-url"
+            class="url-input"
+            placeholder="วางลิงก์ที่ลงท้ายด้วย /exec ที่นี่..."
+          >
+          <button type="button" class="btn-save-url" onclick="saveScriptUrl()">บันทึก URL</button>
+          <button type="button" class="btn-reset-url" onclick="resetScriptUrl()">คืนค่าเริ่มต้น</button>
+        </div>
+        <div class="url-note">ระบบจะจำลิงก์ไว้ในเครื่องนี้โดยไม่ต้องแก้โค้ดใหม่เมื่อเปลี่ยน URL (หรือจะใส่ค่าเริ่มต้นใน DEFAULT_SCRIPT_URL ก็ได้)</div>
+      </div>
+
       <div class="form-grid">
         <div class="form-group">
           <label>วันที่บันทึก</label>
@@ -265,8 +313,9 @@
 </div>
 
 <script>
-  // ⚠️ นำ Web App URL จาก Google Apps Script มาวางแทนที่ข้อความด้านล่างนี้
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyowgvd5Fo2Tb-hXOrpiRg9Y2sjjSEjIdoC2OnmFnVgxYJxjcHScR_Bv1J_-bCXs90n/exec";
+  // ลิงก์ตั้งต้นในโค้ด (เว้นว่างไว้ได้หากต้องการวางผ่านช่องบนหน้าเว็บ หรือใส่ลิงก์ /exec ไว้เป็นค่าเริ่มต้น)
+  const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSsN3tRLxe0cEn-CR0HNRJvpbow8EH0q35FOBCPzuNhq0bOUqq2SD9plGniLTS-dqMEA/exec";
+  const STORAGE_URL_KEY = "drink_tracker_script_url_v1";
 
   const PRODUCTS = [
     { sku: "20000754", name: "อเมริกาโน", isBottle: true },
@@ -286,6 +335,54 @@
   let cachedRecords = [];
   let loadedMonth = "";
 
+  function getScriptUrl() {
+    const saved = (localStorage.getItem(STORAGE_URL_KEY) || "").trim();
+    if (saved) return saved;
+    return (DEFAULT_SCRIPT_URL || "").trim();
+  }
+
+  function updateUrlBadge() {
+    const url = getScriptUrl();
+    const badge = document.getElementById("url-badge");
+    const isValid = /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(\?.*)?$/.test(url);
+    if (isValid) {
+      badge.className = "url-status url-ok";
+      badge.innerText = "พร้อมใช้งาน";
+    } else if (url) {
+      badge.className = "url-status url-missing";
+      badge.innerText = "รูปแบบ URL ไม่ใช่ /exec";
+    } else {
+      badge.className = "url-status url-missing";
+      badge.innerText = "ยังไม่ได้ตั้งค่า";
+    }
+  }
+
+  function saveScriptUrl() {
+    const input = document.getElementById("input-script-url");
+    const val = input.value.trim();
+    if (!val) {
+      localStorage.removeItem(STORAGE_URL_KEY);
+      input.value = getScriptUrl();
+      updateUrlBadge();
+      showBanner("ล้าง URL ที่บันทึกไว้ในเครื่องแล้ว", false);
+      return;
+    }
+    localStorage.setItem(STORAGE_URL_KEY, val);
+    updateUrlBadge();
+    showBanner("✅ บันทึก Web App URL ลงเครื่องเรียบร้อยแล้ว", false);
+    loadedMonth = "";
+    syncMonthFromServer(true);
+  }
+
+  function resetScriptUrl() {
+    localStorage.removeItem(STORAGE_URL_KEY);
+    document.getElementById("input-script-url").value = DEFAULT_SCRIPT_URL;
+    updateUrlBadge();
+    showBanner("คืนค่า URL เริ่มต้นแล้ว", false);
+    loadedMonth = "";
+    syncMonthFromServer(true);
+  }
+
   window.onload = () => {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -296,6 +393,8 @@
 
     document.getElementById("input-date").value = todayStr;
     document.getElementById("report-month").value = monthStr;
+    document.getElementById("input-script-url").value = getScriptUrl();
+    updateUrlBadge();
 
     const savedRecorder = localStorage.getItem("recorder_name");
     if (savedRecorder) document.getElementById("input-recorder").value = savedRecorder;
@@ -406,8 +505,9 @@
   }
 
   async function syncMonthFromServer(force = false, targetMonth = null) {
-    if (!SCRIPT_URL || SCRIPT_URL.includes("ใส่_WEB_APP_URL")) {
-      document.getElementById("day-logs-container").innerText = "กรุณาตั้งค่า Web App URL ก่อนใช้งาน";
+    const scriptUrl = getScriptUrl();
+    if (!scriptUrl) {
+      document.getElementById("day-logs-container").innerText = "กรุณาวาง Web App URL ในช่องด้านบนก่อนใช้งาน";
       return;
     }
 
@@ -424,7 +524,8 @@
 
     document.getElementById("loading-text").style.display = "block";
     try {
-      const res = await fetch(`${SCRIPT_URL}?month=${encodeURIComponent(monthToLoad)}`);
+      const sep = scriptUrl.includes("?") ? "&" : "?";
+      const res = await fetch(`${scriptUrl}${sep}month=${encodeURIComponent(monthToLoad)}`);
       const data = await res.json();
       if (data.status !== "success") throw new Error(data.message || "โหลดข้อมูลไม่สำเร็จ");
 
@@ -440,8 +541,9 @@
   }
 
   async function submitData() {
-    if (!SCRIPT_URL || SCRIPT_URL.includes("ใส่_WEB_APP_URL")) {
-      showBanner("กรุณาใส่ Web App URL ในโค้ดก่อนใช้งาน", true);
+    const scriptUrl = getScriptUrl();
+    if (!scriptUrl) {
+      showBanner("กรุณาวาง Web App URL ในช่องตั้งค่าด้านบนก่อนบันทึก", true);
       return;
     }
 
@@ -475,7 +577,7 @@
     const batchId = "B" + Date.now();
 
     try {
-      const res = await fetch(SCRIPT_URL, {
+      const res = await fetch(scriptUrl, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ date, type: currentType, items, recorder, batchId })
@@ -499,10 +601,12 @@
   }
 
   async function deleteBatch(batchId) {
+    const scriptUrl = getScriptUrl();
+    if (!scriptUrl) return;
     if (!confirm("ต้องการลบรายการที่บันทึกชุดนี้ใช่หรือไม่?")) return;
 
     try {
-      const res = await fetch(SCRIPT_URL, {
+      const res = await fetch(scriptUrl, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ action: "deleteBatch", batchId })
@@ -541,7 +645,6 @@
       return;
     }
 
-    // จัดกลุ่มตาม batchId
     const groups = new Map();
     dayRecs.forEach(r => {
       const key = r.batchId || `row-${r.rowIndex}`;
