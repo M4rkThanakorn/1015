@@ -2,653 +2,662 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>บันทึกการชงเครื่องดื่มขวด - สาขาสนามกีฬาแห่งชาติ</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บันทึกการชงชา-กาแฟขวด | สาขาสนามกีฬาแห่งชาติ</title>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Prompt', sans-serif;
-      background-color: #f4f6f9;
-      -webkit-tap-highlight-color: transparent;
-    }
-    /* ซ่อนปุ่มลูกศรในช่องกรอกตัวเลข */
-    input[type=number]::-webkit-inner-spin-button, 
-    input[type=number]::-webkit-outer-spin-button { 
-      -webkit-appearance: none; 
-      margin: 0; 
-    }
-    input[type=number] {
-      -moz-appearance: textfield;
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #3b82f6;
+      --accent: #f59e0b;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --success: #10b981;
+      --danger: #ef4444;
     }
 
-    /* ตั้งค่าสำหรับหน้าพิมพ์ (Print / PDF) */
+    * { box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+    body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), #0f172a);
+      color: white;
+      padding: 16px 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    header h1 { margin: 0; font-size: 1.25rem; font-weight: 600; }
+    header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.9; }
+
+    .container { max-width: 1140px; margin: 16px auto; padding: 0 12px 32px; }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab-btn {
+      flex: 1; padding: 12px; border: none; border-radius: 10px;
+      background: #e2e8f0; color: #475569; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(30,58,138,0.2); }
+
+    .card {
+      background: var(--card); border-radius: 12px; padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 16px;
+    }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 4px; color: #475569; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: #fff;
+    }
+
+    .type-selector { display: flex; gap: 10px; }
+    .type-option {
+      flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px;
+      text-align: center; cursor: pointer; font-weight: 500; transition: 0.2s;
+    }
+    .type-option.selected-normal { border-color: var(--primary-light); background: #eff6ff; color: var(--primary); }
+    .type-option.selected-extra { border-color: var(--accent); background: #fffbeb; color: #b45309; }
+
+    .item-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 10px 12px; border-bottom: 1px solid #f1f5f9;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-row.orange-item { background: #fff7ed; border-radius: 8px; margin-top: 8px; border: 1px dashed #fdba74; }
+    .item-info { flex: 1; }
+    .item-sku { font-size: 0.75rem; color: var(--muted); display: block; }
+    .item-name { font-weight: 500; font-size: 0.95rem; }
+    .badge-exclude { font-size: 0.7rem; background: #ffedd5; color: #c2410c; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+
+    .qty-control { display: flex; align-items: center; gap: 6px; }
+    .qty-btn {
+      width: 36px; height: 36px; border: 1px solid var(--border); background: #f8fafc;
+      border-radius: 8px; font-size: 1.15rem; font-weight: bold; cursor: pointer;
+    }
+    .qty-btn:active { background: #e2e8f0; }
+    .qty-input {
+      width: 60px; height: 36px; text-align: center; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 1rem; font-weight: 600;
+    }
+
+    .summary-bar {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
+      background: #f8fafc; padding: 12px 16px; border-radius: 10px; margin: 16px 0;
+      border: 1px solid var(--border); font-weight: 600;
+    }
+
+    .action-row { display: flex; gap: 10px; }
+    .btn-clear {
+      padding: 14px 18px; background: #e2e8f0; color: #334155;
+      border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-submit {
+      flex: 1; padding: 14px; background: var(--success); color: white;
+      border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .status-banner {
+      margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: none;
+    }
+    .status-ok { display: block; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .status-err { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    /* Recent logs */
+    .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .log-title { font-size: 1rem; font-weight: 600; margin: 0; }
+    .log-card {
+      border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 10px;
+      background: #f8fafc;
+    }
+    .log-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .log-meta { font-size: 0.85rem; color: #475569; }
+    .tag-normal { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    .tag-extra { background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    .log-items { font-size: 0.85rem; margin-top: 6px; color: #1e293b; }
+    .btn-del {
+      background: #fee2e2; color: #b91c1c; border: none; border-radius: 6px;
+      padding: 4px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+    }
+
+    /* Report Table */
+    .report-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .btn-action {
+      padding: 9px 14px; border: none; border-radius: 8px; font-size: 0.9rem;
+      font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-refresh { background: #e2e8f0; color: #1e293b; }
+    .btn-print { background: var(--primary); color: white; }
+
+    .table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
+    th, td { border: 1px solid #cbd5e1; padding: 6px 5px; text-align: center; }
+    th { background: #f1f5f9; font-weight: 600; color: #334155; }
+    td.col-name { text-align: left; position: sticky; left: 0; background: white; z-index: 2; font-weight: 500; min-width: 170px; }
+    th.col-name { text-align: left; position: sticky; left: 0; background: #f1f5f9; z-index: 3; }
+    tr.row-total td { background: #eff6ff; font-weight: 700; color: var(--primary); }
+    tr.row-total td.col-name { background: #eff6ff; }
+    tr.row-orange td { background: #fff7ed; }
+    tr.row-orange td.col-name { background: #fff7ed; }
+    .extra-tag { color: #d97706; font-size: 0.72rem; display: block; }
+
+    .print-header { display: none; }
+
     @media print {
-      @page {
-        size: A4 landscape;
-        margin: 8mm;
-      }
-      body {
-        background-color: #ffffff !important;
-        font-size: 10px !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .print-only {
-        display: block !important;
-      }
-      .print-container {
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-      table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        font-size: 9px !important;
-      }
-      th, td {
-        border: 1px solid #333 !important;
-        padding: 3px 2px !important;
-        text-align: center !important;
-      }
-      th.sticky-col, td.sticky-col {
-        position: static !important;
-        background-color: transparent !important;
-        text-align: left !important;
-        padding-left: 4px !important;
-      }
-      .bg-orange-highlight {
-        background-color: #fff3cd !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      .bg-total-highlight {
-        background-color: #e2e8f0 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+      @page { size: A4 landscape; margin: 8mm; }
+      body { background: white; }
+      header, .tabs, #tab-form, #recent-log-card, .no-print { display: none !important; }
+      .container { max-width: 100%; margin: 0; padding: 0; }
+      .card { box-shadow: none; padding: 0; margin: 0; }
+      .print-header { display: block; text-align: center; margin-bottom: 10px; }
+      .print-header h2 { margin: 0; font-size: 14pt; }
+      .print-header p { margin: 2px 0 0; font-size: 10pt; }
+      .table-wrapper { overflow: visible; border: none; }
+      table { font-size: 7.5pt; width: 100%; }
+      th, td { padding: 3px 2px; border: 1px solid #64748b; }
+      td.col-name, th.col-name { position: static; min-width: auto; }
+      .print-sign { display: flex !important; justify-content: space-between; margin-top: 20px; font-size: 9pt; }
     }
   </style>
 </head>
-<body class="text-slate-800 pb-20 md:pb-10">
+<body>
 
-  <!-- Header -->
-  <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-30 no-print">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <div>
-        <h1 class="text-lg font-bold tracking-wide">บันทึกการชงชา-กาแฟขวด/วัน</h1>
-        <p class="text-xs text-emerald-100">สาขาสนามกีฬาแห่งชาติ</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <span id="syncStatus" class="text-xs bg-emerald-800/80 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          พร้อมใช้งาน
-        </span>
-        <button onclick="forceSync()" class="text-xs bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-lg transition active:scale-95">
-          รีเฟรชข้อมูล
-        </button>
-      </div>
-    </div>
+<header>
+  <h1>บันทึกการชงชา-กาแฟขวด</h1>
+  <p>สาขา สนามกีฬาแห่งชาติ</p>
+</header>
 
-    <!-- Navigation Tabs -->
-    <div class="max-w-6xl mx-auto px-4 flex border-t border-emerald-600/50">
-      <button onclick="switchTab('record')" id="tab-record" class="flex-1 sm:flex-none sm:px-6 py-2.5 text-sm font-medium border-b-2 border-white text-white transition">
-        📝 บันทึกยอดรายวัน
-      </button>
-      <button onclick="switchTab('report')" id="tab-report" class="flex-1 sm:flex-none sm:px-6 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-200 hover:text-white transition">
-        📊 รายงานตาราง 1-31
-      </button>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="max-w-6xl mx-auto px-3 sm:px-4 pt-4">
-
-    <!-- ==================== TAB 1: บันทึกข้อมูล ==================== -->
-    <section id="view-record" class="space-y-4">
-      
-      <!-- Control Bar -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">วันที่บันทึก</label>
-          <input type="date" id="recordDate" onchange="updateDailyPreview()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">ประเภทการบันทึก</label>
-          <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-lg">
-            <button type="button" onclick="setRecordType('ปกติ')" id="btn-type-normal" class="py-1.5 px-3 rounded-md text-sm font-medium bg-emerald-600 text-white shadow-sm transition">
-              รอบปกติ / ตั้งต้น
-            </button>
-            <button type="button" onclick="setRecordType('ทำเพิ่ม')" id="btn-type-extra" class="py-1.5 px-3 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition">
-              + ทำขวดเพิ่มระหว่างวัน
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Summary Banner (แยกยอดขวด กับ น้ำส้ม ชัดเจน) -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5">
-          <div class="text-xs text-emerald-700 font-medium">ยอดกรอกครั้งนี้ (ไม่รวมน้ำส้ม)</div>
-          <div class="text-2xl font-bold text-emerald-800 mt-0.5"><span id="currentInputTotal">0</span> <span class="text-xs font-normal">ขวด</span></div>
-        </div>
-        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5">
-          <div class="text-xs text-blue-700 font-medium">ยอดสะสมวันนี้ (ไม่รวมน้ำส้ม)</div>
-          <div class="text-2xl font-bold text-blue-800 mt-0.5"><span id="todaySavedTotal">0</span> <span class="text-xs font-normal">ขวด</span></div>
-        </div>
-        <div class="col-span-2 sm:col-span-1 bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex sm:block items-center justify-between">
-          <div>
-            <div class="text-xs text-amber-800 font-medium">20000955 น้ำส้ม (แยกนับต่างหาก)</div>
-            <div class="text-xs text-amber-600">สะสมวันนี้: <strong id="todayOrangeTotal">0</strong> แก้ว/หน่วย</div>
-          </div>
-          <div class="text-xl font-bold text-amber-700 sm:mt-0.5">+<span id="currentOrangeInput">0</span></div>
-        </div>
-      </div>
-
-      <!-- Product List Form -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-          <h2 class="text-sm font-semibold text-slate-700">รายการเครื่องดื่ม (11 รายการ)</h2>
-          <button type="button" onclick="resetInputs()" class="text-xs text-rose-600 hover:underline">ล้างตัวเลข</button>
-        </div>
-
-        <div id="productListContainer" class="divide-y divide-slate-100">
-          <!-- รายการจะถูกสร้างด้วย JS -->
-        </div>
-
-        <div class="p-4 bg-slate-50 border-t border-slate-200">
-          <button type="button" onclick="submitData()" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-3 px-4 rounded-xl shadow-sm transition flex items-center justify-center gap-2 text-base">
-            <span>บันทึกข้อมูลลงระบบ</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Today History Log -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-        <h3 class="text-sm font-semibold text-slate-700 mb-2">ประวัติที่บันทึกแล้วในวันที่เลือก (<span id="selectedDateLabel"></span>)</h3>
-        <div id="todayHistoryList" class="text-xs text-slate-600 space-y-1.5">
-          <p class="text-slate-400 italic">ยังไม่มีข้อมูลในวันที่เลือก</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== TAB 2: รายงานตาราง 1-31 ==================== -->
-    <section id="view-report" class="hidden space-y-4">
-      
-      <!-- Filter & Print Controls -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
-        <div class="flex flex-wrap items-center gap-2">
-          <label class="text-sm font-medium text-slate-700">เลือกเดือนรายงาน:</label>
-          <input type="month" id="reportMonth" onchange="renderReportTable()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          
-          <select id="reportFilterType" onchange="renderReportTable()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <option value="ALL">รวมทั้งหมด (ปกติ + ทำเพิ่ม)</option>
-            <option value="ปกติ">เฉพาะรอบปกติ</option>
-            <option value="ทำเพิ่ม">เฉพาะทำขวดเพิ่ม</option>
-          </select>
-        </div>
-
-        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm flex items-center justify-center gap-2 transition">
-          🖨️ พิมพ์รายงาน / บันทึก PDF
-        </button>
-      </div>
-
-      <!-- Report Card (Printable Area) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 print-container">
-        
-        <!-- Print Header -->
-        <div class="mb-3 flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-slate-200 pb-2">
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900">รายงานสรุปจำนวนการชงชา-กาแฟขวดรายวัน</h2>
-            <p class="text-xs sm:text-sm text-slate-600">สาขาสนามกีฬาแห่งชาติ | ประจำเดือน: <span id="printMonthLabel" class="font-semibold text-slate-900"></span> (<span id="printTypeLabel">รวมทั้งหมด</span>)</p>
-          </div>
-          <div class="text-xs text-slate-500 mt-1 sm:mt-0">
-            * ยอดรวมขวด/วัน ไม่นับรวมรายการน้ำส้ม (20000955)
-          </div>
-        </div>
-
-        <!-- Responsive Scrollable Table -->
-        <div class="overflow-x-auto pb-2">
-          <table class="w-full text-xs border-collapse border border-slate-300 whitespace-nowrap">
-            <thead>
-              <tr id="reportTableHead" class="bg-slate-100 text-slate-700 font-semibold">
-                <!-- สร้างหัวตาราง 1-31 ด้วย JS -->
-              </tr>
-            </thead>
-            <tbody id="reportTableBody" class="divide-y divide-slate-200">
-              <!-- สร้างข้อมูลตารางด้วย JS -->
-            </tbody>
-            <tfoot id="reportTableFoot" class="bg-slate-100 font-bold text-slate-900">
-              <!-- สร้างแถวผลรวมรายวันด้วย JS -->
-            </tfoot>
-          </table>
-        </div>
-
-        <!-- Signature Box for Print Only -->
-        <div class="hidden print-only mt-6 pt-4 grid grid-cols-2 gap-8 text-xs text-slate-700">
-          <div class="text-center">
-            <p>ลงชื่อ ...................................................... ผู้จัดทำรายงาน</p>
-            <p class="mt-1">(......................................................)</p>
-            <p class="mt-0.5">วันที่ ........../........../..........</p>
-          </div>
-          <div class="text-center">
-            <p>ลงชื่อ ...................................................... ผู้จัดการสาขา</p>
-            <p class="mt-1">(......................................................)</p>
-            <p class="mt-0.5">วันที่ ........../........../..........</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-5 right-5 left-5 sm:left-auto sm:w-80 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center justify-between no-print">
-    <span id="toastMsg">บันทึกสำเร็จ</span>
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('form')">📝 บันทึกยอดชงรายวัน</button>
+    <button class="tab-btn" onclick="switchTab('report')">📊 รายงานประจำเดือน (1-31)</button>
   </div>
 
-  <script>
-    // =========================================================================
-    // ตั้งค่า URL ของ Google Apps Script Web App ที่นี่
-    // =========================================================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-YmmATVzTAkl-4lOqg2KoLQYCVURyRIGZujAw3yC_xqJKr0Y_tIi3n8N_3wxFJSBa/exec";
-    const STORAGE_KEY = "turtle_national_stadium_bottles_v1";
+  <!-- TAB 1: FORM -->
+  <div id="tab-form">
+    <div class="card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>วันที่บันทึก</label>
+          <input type="date" id="input-date" onchange="renderDayLogs()">
+        </div>
+        <div class="form-group">
+          <label>ชื่อผู้บันทึก</label>
+          <input type="text" id="input-recorder" placeholder="เช่น บีม / กะเช้า">
+        </div>
+      </div>
 
-    // รายการสินค้าตามกำหนด
-    const PRODUCTS = [
-      { code: "20000754", name: "อเมริกาโน", isOrange: false },
-      { code: "20000563", name: "เอสเปรสโซ", isOrange: false },
-      { code: "20000755", name: "ลาเต้", isOrange: false },
-      { code: "20000564", name: "ชานมเอิร์ลเกรย์", isOrange: false },
-      { code: "20000565", name: "ชาไทย", isOrange: false },
-      { code: "20000809", name: "ชามะนาว", isOrange: false },
-      { code: "20000648", name: "นมสดสตอเบอร์รี่", isOrange: false },
-      { code: "20001048", name: "ดาร์คโกโก้", isOrange: false },
-      { code: "20001180", name: "มัชฉะลาเต้เย็น", isOrange: false },
-      { code: "20001181", name: "น้ำผึ้งมะนาวเย็น", isOrange: false },
-      { code: "20000955", name: "น้ำส้ม", isOrange: true } // ไม่นับรวมยอดขวด
-    ];
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label>ประเภทการชง</label>
+        <div class="type-selector">
+          <div id="btn-normal" class="type-option selected-normal" onclick="selectType('normal')">
+            🥤 ชงรอบปกติ / หลัก
+          </div>
+          <div id="btn-extra" class="type-option" onclick="selectType('extra')">
+            ➕ ชงเพิ่มระหว่างวัน
+          </div>
+        </div>
+      </div>
 
-    let allRecords = [];
-    let currentRecordType = "ปกติ";
+      <div id="product-list"></div>
 
-    // เริ่มต้นทำงานทันทีที่เปิดหน้าเว็บ
-    document.addEventListener("DOMContentLoaded", () => {
-      initDates();
-      renderProductInputs();
-      loadFromCache();
-      fetchFromGoogleSheets();
+      <div class="summary-bar">
+        <span>รวมยอดขวดครั้งนี้ (ไม่รวมน้ำส้ม):</span>
+        <span style="font-size: 1.2rem; color: var(--primary);"><span id="total-bottles">0</span> ขวด</span>
+      </div>
+
+      <div class="action-row">
+        <button type="button" class="btn-clear" onclick="clearForm()">ล้างค่า</button>
+        <button type="button" id="btn-submit" class="btn-submit" onclick="submitData()">บันทึกข้อมูลลงระบบ</button>
+      </div>
+
+      <div id="status-banner" class="status-banner"></div>
+    </div>
+
+    <div id="recent-log-card" class="card">
+      <div class="log-header">
+        <h2 class="log-title">ประวัติการบันทึกของวันที่เลือก (<span id="log-date-label">-</span>)</h2>
+        <button type="button" class="btn-action btn-refresh" onclick="syncMonthFromServer(true)">🔄 อัปเดตประวัติ</button>
+      </div>
+      <div id="day-logs-container" style="color: var(--muted); font-size: 0.9rem;">กำลังโหลด...</div>
+    </div>
+  </div>
+
+  <!-- TAB 2: REPORT -->
+  <div id="tab-report" class="card" style="display: none;">
+    <div class="report-controls no-print">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+        <label style="font-weight: 600;">เลือกเดือน:</label>
+        <input type="month" id="report-month" onchange="onMonthChange()" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+        <select id="report-filter" onchange="renderTable()" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+          <option value="all">แสดงยอดรวมทั้งหมด (ปกติ + เพิ่ม)</option>
+          <option value="split">แสดงแยกยอด (ปกติ / +เพิ่ม)</option>
+          <option value="normal">เฉพาะชงรอบปกติ</option>
+          <option value="extra">เฉพาะชงเพิ่ม</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-action btn-refresh" onclick="syncMonthFromServer(true)">🔄 รีเฟรชข้อมูล</button>
+        <button class="btn-action btn-print" onclick="window.print()">🖨️ พิมพ์รายงานให้ผู้จัดการ</button>
+      </div>
+    </div>
+
+    <div class="print-header">
+      <h2>รายงานสรุปยอดการชงเครื่องดื่มขวดประจำเดือน <span id="print-month-label"></span></h2>
+      <p>สาขา สนามกีฬาแห่งชาติ | พิมพ์เมื่อ: <span id="print-date-label"></span></p>
+    </div>
+
+    <div id="loading-text" style="text-align: center; padding: 16px; display: none; color: var(--muted);">กำลังโหลดข้อมูลจาก Google Sheets...</div>
+
+    <div class="table-wrapper">
+      <table id="report-table"></table>
+    </div>
+
+    <div class="print-sign" style="display: none;">
+      <div>ผู้จัดทำรายงาน: ......................................................</div>
+      <div>ผู้จัดการสาขาตรวจสอบ: ......................................................</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ⚠️ นำ Web App URL จาก Google Apps Script มาวางแทนที่ข้อความด้านล่างนี้
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyowgvd5Fo2Tb-hXOrpiRg9Y2sjjSEjIdoC2OnmFnVgxYJxjcHScR_Bv1J_-bCXs90n/exec";
+
+  const PRODUCTS = [
+    { sku: "20000754", name: "อเมริกาโน", isBottle: true },
+    { sku: "20000563", name: "เอสเปรสโซ", isBottle: true },
+    { sku: "20000755", name: "ลาเต้", isBottle: true },
+    { sku: "20000564", name: "ชานมเอิร์ลเกรย์", isBottle: true },
+    { sku: "20000565", name: "ชาไทย", isBottle: true },
+    { sku: "20000809", name: "ชามะนาว", isBottle: true },
+    { sku: "20000648", name: "นมสดสตอเบอร์รี่", isBottle: true },
+    { sku: "20001048", name: "ดาร์คโกโก้", isBottle: true },
+    { sku: "20001180", name: "มัชฉะลาเต้เย็น", isBottle: true },
+    { sku: "20001181", name: "น้ำผึ้งมะนาวเย็น", isBottle: true },
+    { sku: "20000955", name: "น้ำส้ม", isBottle: false }
+  ];
+
+  let currentType = "normal";
+  let cachedRecords = [];
+  let loadedMonth = "";
+
+  window.onload = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    const monthStr = `${yyyy}-${mm}`;
+
+    document.getElementById("input-date").value = todayStr;
+    document.getElementById("report-month").value = monthStr;
+
+    const savedRecorder = localStorage.getItem("recorder_name");
+    if (savedRecorder) document.getElementById("input-recorder").value = savedRecorder;
+
+    renderProductInputs();
+    syncMonthFromServer(true, monthStr);
+  };
+
+  function renderProductInputs() {
+    const container = document.getElementById("product-list");
+    container.innerHTML = PRODUCTS.map((p, idx) => `
+      <div class="item-row ${p.isBottle ? '' : 'orange-item'}">
+        <div class="item-info">
+          <span class="item-sku">${p.sku}</span>
+          <span class="item-name">${p.name}</span>
+          ${!p.isBottle ? '<span class="badge-exclude">ไม่นับรวมยอดขวด</span>' : ''}
+        </div>
+        <div class="qty-control">
+          <button type="button" class="qty-btn" onclick="adjustQty(${idx}, -1)">-</button>
+          <input
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            value="0"
+            id="qty-${idx}"
+            class="qty-input"
+            onfocus="this.select()"
+            oninput="sanitizeQtyInput(this)"
+          >
+          <button type="button" class="qty-btn" onclick="adjustQty(${idx}, 1)">+</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function sanitizeQtyInput(input) {
+    const cleaned = input.value.replace(/[^0-9]/g, "");
+    input.value = cleaned === "" ? "0" : String(parseInt(cleaned, 10));
+    calcTotal();
+  }
+
+  function adjustQty(idx, delta) {
+    const input = document.getElementById(`qty-${idx}`);
+    let val = parseInt(input.value, 10) || 0;
+    val = Math.max(0, val + delta);
+    input.value = String(val);
+    calcTotal();
+  }
+
+  function calcTotal() {
+    let totalBottles = 0;
+    PRODUCTS.forEach((p, idx) => {
+      if (p.isBottle) {
+        totalBottles += parseInt(document.getElementById(`qty-${idx}`).value, 10) || 0;
+      }
+    });
+    document.getElementById("total-bottles").innerText = totalBottles;
+  }
+
+  function clearForm() {
+    PRODUCTS.forEach((_, idx) => {
+      document.getElementById(`qty-${idx}`).value = "0";
+    });
+    calcTotal();
+    hideBanner();
+  }
+
+  function showBanner(msg, isError) {
+    const el = document.getElementById("status-banner");
+    el.className = "status-banner " + (isError ? "status-err" : "status-ok");
+    el.innerText = msg;
+  }
+
+  function hideBanner() {
+    const el = document.getElementById("status-banner");
+    el.className = "status-banner";
+    el.innerText = "";
+  }
+
+  function selectType(type) {
+    currentType = type;
+    document.getElementById("btn-normal").className = "type-option" + (type === "normal" ? " selected-normal" : "");
+    document.getElementById("btn-extra").className = "type-option" + (type === "extra" ? " selected-extra" : "");
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll(".tab-btn").forEach((b, i) => {
+      b.classList.toggle("active", (tab === "form" && i === 0) || (tab === "report" && i === 1));
+    });
+    document.getElementById("tab-form").style.display = tab === "form" ? "block" : "none";
+    document.getElementById("tab-report").style.display = tab === "report" ? "block" : "none";
+
+    if (tab === "report") {
+      const m = document.getElementById("report-month").value;
+      if (m !== loadedMonth) {
+        syncMonthFromServer(true, m);
+      } else {
+        renderTable();
+      }
+    } else {
+      renderDayLogs();
+    }
+  }
+
+  function onMonthChange() {
+    const m = document.getElementById("report-month").value;
+    syncMonthFromServer(true, m);
+  }
+
+  async function syncMonthFromServer(force = false, targetMonth = null) {
+    if (!SCRIPT_URL || SCRIPT_URL.includes("ใส่_WEB_APP_URL")) {
+      document.getElementById("day-logs-container").innerText = "กรุณาตั้งค่า Web App URL ก่อนใช้งาน";
+      return;
+    }
+
+    const activeTabReport = document.getElementById("tab-report").style.display !== "none";
+    const dateInputVal = document.getElementById("input-date").value;
+    const monthToLoad = targetMonth || (activeTabReport ? document.getElementById("report-month").value : dateInputVal.slice(0, 7));
+
+    if (!monthToLoad) return;
+    if (!force && loadedMonth === monthToLoad) {
+      renderDayLogs();
+      renderTable();
+      return;
+    }
+
+    document.getElementById("loading-text").style.display = "block";
+    try {
+      const res = await fetch(`${SCRIPT_URL}?month=${encodeURIComponent(monthToLoad)}`);
+      const data = await res.json();
+      if (data.status !== "success") throw new Error(data.message || "โหลดข้อมูลไม่สำเร็จ");
+
+      cachedRecords = data.records || [];
+      loadedMonth = monthToLoad;
+      renderDayLogs();
+      renderTable();
+    } catch (err) {
+      document.getElementById("day-logs-container").innerText = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
+    } finally {
+      document.getElementById("loading-text").style.display = "none";
+    }
+  }
+
+  async function submitData() {
+    if (!SCRIPT_URL || SCRIPT_URL.includes("ใส่_WEB_APP_URL")) {
+      showBanner("กรุณาใส่ Web App URL ในโค้ดก่อนใช้งาน", true);
+      return;
+    }
+
+    const date = document.getElementById("input-date").value;
+    const recorder = document.getElementById("input-recorder").value.trim();
+    if (!date) {
+      showBanner("กรุณาเลือกวันที่บันทึก", true);
+      return;
+    }
+
+    if (recorder) localStorage.setItem("recorder_name", recorder);
+
+    const items = [];
+    PRODUCTS.forEach((p, idx) => {
+      const qty = parseInt(document.getElementById(`qty-${idx}`).value, 10) || 0;
+      if (qty > 0) {
+        items.push({ sku: p.sku, name: p.name, qty });
+      }
     });
 
-    function initDates() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      
-      document.getElementById("recordDate").value = `${yyyy}-${mm}-${dd}`;
-      document.getElementById("reportMonth").value = `${yyyy}-${mm}`;
+    if (items.length === 0) {
+      showBanner("กรุณากรอกจำนวนอย่างน้อย 1 รายการก่อนบันทึก", true);
+      return;
     }
 
-    function switchTab(tab) {
-      const recordView = document.getElementById("view-record");
-      const reportView = document.getElementById("view-report");
-      const tabRecordBtn = document.getElementById("tab-record");
-      const tabReportBtn = document.getElementById("tab-report");
+    const btn = document.getElementById("btn-submit");
+    btn.disabled = true;
+    btn.innerText = "กำลังบันทึก...";
+    hideBanner();
 
-      if (tab === "record") {
-        recordView.classList.remove("hidden");
-        reportView.classList.add("hidden");
-        tabRecordBtn.className = "flex-1 sm:flex-none sm:px-6 py-2.5 text-sm font-medium border-b-2 border-white text-white transition";
-        tabReportBtn.className = "flex-1 sm:flex-none sm:px-6 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-200 hover:text-white transition";
-        updateDailyPreview();
-      } else {
-        recordView.classList.add("hidden");
-        reportView.classList.remove("hidden");
-        tabReportBtn.className = "flex-1 sm:flex-none sm:px-6 py-2.5 text-sm font-medium border-b-2 border-white text-white transition";
-        tabRecordBtn.className = "flex-1 sm:flex-none sm:px-6 py-2.5 text-sm font-medium border-b-2 border-transparent text-emerald-200 hover:text-white transition";
-        renderReportTable();
-      }
-    }
+    const batchId = "B" + Date.now();
 
-    function setRecordType(type) {
-      currentRecordType = type;
-      const btnNormal = document.getElementById("btn-type-normal");
-      const btnExtra = document.getElementById("btn-type-extra");
-
-      if (type === "ปกติ") {
-        btnNormal.className = "py-1.5 px-3 rounded-md text-sm font-medium bg-emerald-600 text-white shadow-sm transition";
-        btnExtra.className = "py-1.5 px-3 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition";
-      } else {
-        btnExtra.className = "py-1.5 px-3 rounded-md text-sm font-medium bg-amber-500 text-white shadow-sm transition";
-        btnNormal.className = "py-1.5 px-3 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 transition";
-      }
-    }
-
-    function renderProductInputs() {
-      const container = document.getElementById("productListContainer");
-      container.innerHTML = PRODUCTS.map((item, idx) => `
-        <div class="p-3 sm:px-4 flex items-center justify-between gap-2 ${item.isOrange ? 'bg-amber-50/60' : 'hover:bg-slate-50'}">
-          <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-1.5">
-              <span class="text-xs font-mono text-slate-400">${item.code}</span>
-              ${item.isOrange ? '<span class="text-[10px] bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded font-medium">ไม่นับรวมยอดขวด</span>' : ''}
-            </div>
-            <div class="text-sm font-medium text-slate-800 truncate">${item.name}</div>
-          </div>
-
-          <div class="flex items-center gap-1.5">
-            <button type="button" onclick="adjustQty('${item.code}', -1)" class="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-bold text-lg flex items-center justify-center transition">-</button>
-            <input type="number" inputmode="numeric" min="0" id="qty_${item.code}" value="" placeholder="0" oninput="calculateCurrentInput()" class="w-14 h-9 text-center font-semibold text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-            <button type="button" onclick="adjustQty('${item.code}', 1)" class="w-9 h-9 rounded-lg bg-emerald-100 hover:bg-emerald-200 active:bg-emerald-300 text-emerald-800 font-bold text-lg flex items-center justify-center transition">+</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function adjustQty(code, delta) {
-      const input = document.getElementById(`qty_${code}`);
-      let val = parseInt(input.value) || 0;
-      val = Math.max(0, val + delta);
-      input.value = val === 0 ? "" : val;
-      calculateCurrentInput();
-    }
-
-    function resetInputs() {
-      PRODUCTS.forEach(p => {
-        document.getElementById(`qty_${p.code}`).value = "";
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ date, type: currentType, items, recorder, batchId })
       });
-      calculateCurrentInput();
+      const result = await res.json();
+      if (result.status !== "success") {
+        throw new Error(result.message || "บันทึกไม่สำเร็จ");
+      }
+
+      showBanner(`✅ บันทึกข้อมูลเรียบร้อยแล้ว (${result.added} รายการ)`, false);
+      clearForm();
+
+      const recordMonth = date.slice(0, 7);
+      await syncMonthFromServer(true, recordMonth);
+    } catch (err) {
+      showBanner("❌ บันทึกไม่สำเร็จ: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "บันทึกข้อมูลลงระบบ";
     }
+  }
 
-    function calculateCurrentInput() {
-      let bottleSum = 0;
-      let orangeSum = 0;
+  async function deleteBatch(batchId) {
+    if (!confirm("ต้องการลบรายการที่บันทึกชุดนี้ใช่หรือไม่?")) return;
 
-      PRODUCTS.forEach(p => {
-        const val = parseInt(document.getElementById(`qty_${p.code}`).value) || 0;
-        if (p.isOrange) {
-          orangeSum += val;
-        } else {
-          bottleSum += val;
-        }
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "deleteBatch", batchId })
       });
+      const result = await res.json();
+      if (result.status !== "success") throw new Error(result.message || "ลบไม่สำเร็จ");
 
-      document.getElementById("currentInputTotal").textContent = bottleSum;
-      document.getElementById("currentOrangeInput").textContent = orangeSum;
+      showBanner(`🗑️ ลบรายการเรียบร้อยแล้ว (${result.deleted} แถว)`, false);
+      await syncMonthFromServer(true, loadedMonth);
+    } catch (err) {
+      showBanner("❌ ลบรายการไม่สำเร็จ: " + err.message, true);
+    }
+  }
+
+  function renderDayLogs() {
+    const selectedDate = document.getElementById("input-date").value;
+    document.getElementById("log-date-label").innerText = selectedDate || "-";
+    const container = document.getElementById("day-logs-container");
+
+    if (!selectedDate) {
+      container.innerText = "กรุณาเลือกวันที่";
+      return;
     }
 
-    // โหลดข้อมูลจาก Cache ทันทีเพื่อความรวดเร็ว
-    function loadFromCache() {
-      const cached = localStorage.getItem(STORAGE_KEY);
-      if (cached) {
-        try {
-          allRecords = JSON.parse(cached);
-          updateDailyPreview();
-          renderReportTable();
-        } catch (e) {
-          console.error("Cache error", e);
-        }
-      }
+    const targetMonth = selectedDate.slice(0, 7);
+    if (loadedMonth && loadedMonth !== targetMonth) {
+      syncMonthFromServer(true, targetMonth);
+      return;
     }
 
-    function setSyncStatus(text, isLoading = false) {
-      const el = document.getElementById("syncStatus");
-      el.innerHTML = `
-        <span class="w-2 h-2 rounded-full ${isLoading ? 'bg-amber-400 animate-ping' : 'bg-emerald-400'}"></span>
-        ${text}
-      `;
+    const bottleSkus = new Set(PRODUCTS.filter(p => p.isBottle).map(p => p.sku));
+    const dayRecs = cachedRecords.filter(r => r.date === selectedDate);
+
+    if (dayRecs.length === 0) {
+      container.innerText = "ยังไม่มีการบันทึกข้อมูลในวันที่เลือก";
+      return;
     }
 
-    async function fetchFromGoogleSheets() {
-      if (!SCRIPT_URL || SCRIPT_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) {
-        setSyncStatus("โหมดออฟไลน์ (ยังไม่ใส่ URL)");
-        return;
-      }
-      setSyncStatus("กำลังซิงค์ข้อมูล...", true);
-      try {
-        const res = await fetch(SCRIPT_URL);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          allRecords = data;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(allRecords));
-          updateDailyPreview();
-          renderReportTable();
-          setSyncStatus("อัปเดตล่าสุดแล้ว");
-        }
-      } catch (err) {
-        console.error(err);
-        setSyncStatus("ใช้ข้อมูลออฟไลน์");
-      }
-    }
-
-    function forceSync() {
-      fetchFromGoogleSheets();
-      showToast("กำลังดึงข้อมูลล่าสุดจาก Google Sheets...");
-    }
-
-    async function submitData() {
-      const date = document.getElementById("recordDate").value;
-      if (!date) {
-        showToast("กรุณาเลือกวันที่ก่อนบันทึก");
-        return;
-      }
-
-      const itemsToSave = [];
-      PRODUCTS.forEach(p => {
-        const qty = parseInt(document.getElementById(`qty_${p.code}`).value) || 0;
-        if (qty > 0) {
-          itemsToSave.push({
-            code: p.code,
-            name: p.name,
-            qty: qty
-          });
-        }
-      });
-
-      if (itemsToSave.length === 0) {
-        showToast("กรุณากรอกจำนวนอย่างน้อย 1 รายการ");
-        return;
-      }
-
-      // Optimistic UI Update: อัปเดตหน้าจอและ Cache ทันทีไม่ต้องรอ Server
-      itemsToSave.forEach(item => {
-        allRecords.push({
-          date: date,
-          type: currentRecordType,
-          code: item.code,
-          name: item.name,
-          qty: item.qty
+    // จัดกลุ่มตาม batchId
+    const groups = new Map();
+    dayRecs.forEach(r => {
+      const key = r.batchId || `row-${r.rowIndex}`;
+      if (!groups.has(key)) {
+        groups.set(key, {
+          batchId: r.batchId,
+          type: r.type,
+          recorder: r.recorder || "-",
+          bottleSum: 0,
+          orangeSum: 0,
+          parts: []
         });
-      });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(allRecords));
-      resetInputs();
-      updateDailyPreview();
-      showToast(`บันทึกข้อมูล (${currentRecordType}) เรียบร้อย!`);
-
-      // ส่งข้อมูลไป Google Sheets เบื้องหลัง
-      if (SCRIPT_URL && !SCRIPT_URL.includes("YOUR_GOOGLE_APPS_SCRIPT")) {
-        setSyncStatus("กำลังส่งไป Google Sheet...", true);
-        try {
-          const response = await fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({
-              action: "save",
-              date: date,
-              type: currentRecordType,
-              items: itemsToSave
-            })
-          });
-          const result = await response.json();
-          if (result.status === "success" && Array.isArray(result.data)) {
-            allRecords = result.data;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(allRecords));
-            updateDailyPreview();
-          }
-          setSyncStatus("ซิงค์กับ Sheet แล้ว");
-        } catch (error) {
-          console.error("Save error:", error);
-          setSyncStatus("บันทึกในเครื่องแล้ว (รอซิงค์)");
-        }
       }
-    }
+      const g = groups.get(key);
+      if (bottleSkus.has(r.sku)) g.bottleSum += r.qty;
+      else g.orangeSum += r.qty;
+      g.parts.push(`${r.name} ${r.qty}`);
+    });
 
-    function updateDailyPreview() {
-      const selectedDate = document.getElementById("recordDate").value;
-      document.getElementById("selectedDateLabel").textContent = formatThaiDate(selectedDate);
+    const list = Array.from(groups.values()).reverse();
+    container.innerHTML = list.map(g => {
+      const badge = g.type === "extra"
+        ? `<span class="tag-extra">ชงเพิ่ม</span>`
+        : `<span class="tag-normal">ชงปกติ</span>`;
+      const delBtn = g.batchId
+        ? `<button type="button" class="btn-del" onclick="deleteBatch('${g.batchId}')">ลบชุดนี้</button>`
+        : "";
+      const orangeNote = g.orangeSum > 0 ? ` | น้ำส้ม: <b>${g.orangeSum}</b>` : "";
 
-      const dayRecords = allRecords.filter(r => r.date === selectedDate);
-      let savedBottles = 0;
-      let savedOrange = 0;
-
-      dayRecords.forEach(r => {
-        if (String(r.code) === "20000955") {
-          savedOrange += Number(r.qty);
-        } else {
-          savedBottles += Number(r.qty);
-        }
-      });
-
-      document.getElementById("todaySavedTotal").textContent = savedBottles;
-      document.getElementById("todayOrangeTotal").textContent = savedOrange;
-
-      const historyContainer = document.getElementById("todayHistoryList");
-      if (dayRecords.length === 0) {
-        historyContainer.innerHTML = `<p class="text-slate-400 italic">ยังไม่มีข้อมูลที่บันทึกในวันที่เลือก</p>`;
-        return;
-      }
-
-      // สรุปรวมรายสินค้าของวันนั้น
-      const summaryMap = {};
-      dayRecords.forEach(r => {
-        const key = `${r.code}_${r.type}`;
-        if (!summaryMap[key]) {
-          summaryMap[key] = { code: r.code, name: r.name, type: r.type, qty: 0 };
-        }
-        summaryMap[key].qty += Number(r.qty);
-      });
-
-      historyContainer.innerHTML = Object.values(summaryMap).map(item => `
-        <div class="flex items-center justify-between py-1.5 border-b border-slate-100 last:border-0">
-          <div class="flex items-center gap-2">
-            <span class="px-1.5 py-0.5 rounded text-[10px] font-medium ${item.type === 'ทำเพิ่ม' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${item.type}</span>
-            <span class="font-medium text-slate-700">${item.name}</span>
+      return `
+        <div class="log-card">
+          <div class="log-top">
+            <div class="log-meta">
+              ${badge} ผู้บันทึก: <b>${g.recorder}</b> | รวมขวด: <b>${g.bottleSum}</b> ขวด${orangeNote}
+            </div>
+            ${delBtn}
           </div>
-          <span class="font-bold text-slate-900">${item.qty} ${item.code === '20000955' ? 'แก้ว' : 'ขวด'}</span>
+          <div class="log-items">${g.parts.join(", ")}</div>
         </div>
-      `).join("");
-    }
-
-    // สร้างตารางรายงาน 1 - 31
-    function renderReportTable() {
-      const monthVal = document.getElementById("reportMonth").value; // YYYY-MM
-      const filterType = document.getElementById("reportFilterType").value;
-      if (!monthVal) return;
-
-      const [yearStr, monthStr] = monthVal.split("-");
-      const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-      const monthIndex = parseInt(monthStr, 10) - 1;
-      const thaiYear = parseInt(yearStr, 10) + 543;
-
-      document.getElementById("printMonthLabel").textContent = `${thaiMonths[monthIndex]} ${thaiYear}`;
-      document.getElementById("printTypeLabel").textContent = filterType === "ALL" ? "รวมทั้งหมด (ปกติ + ทำเพิ่ม)" : `เฉพาะ${filterType}`;
-
-      // กรองข้อมูลเฉพาะเดือนที่เลือก
-      const filteredRecords = allRecords.filter(r => {
-        const matchMonth = r.date && r.date.startsWith(monthVal);
-        const matchType = filterType === "ALL" ? true : r.type === filterType;
-        return matchMonth && matchType;
-      });
-
-      // สร้างตาราง Matrix: matrix[code][day 1..31]
-      const matrix = {};
-      PRODUCTS.forEach(p => {
-        matrix[p.code] = Array(32).fill(0);
-      });
-
-      filteredRecords.forEach(r => {
-        const day = parseInt(r.date.split("-")[2], 10);
-        if (matrix[r.code] && day >= 1 && day <= 31) {
-          matrix[r.code][day] += Number(r.qty);
-        }
-      });
-
-      // 1. Render Table Header (1 - 31)
-      let headHTML = `
-        <th class="border border-slate-300 px-2 py-2 text-left sticky left-0 bg-slate-100 z-10 sticky-col">รหัส / รายการ</th>
       `;
-      for (let d = 1; d <= 31; d++) {
-        headHTML += `<th class="border border-slate-300 px-1.5 py-2 text-center min-w-[26px]">${d}</th>`;
+    }).join("");
+  }
+
+  function renderTable() {
+    const month = document.getElementById("report-month").value;
+    const filter = document.getElementById("report-filter").value;
+
+    document.getElementById("print-month-label").innerText = month;
+    document.getElementById("print-date-label").innerText = new Date().toLocaleDateString("th-TH");
+
+    const map = {};
+    PRODUCTS.forEach(p => {
+      map[p.sku] = {};
+      for (let d = 1; d <= 31; d++) map[p.sku][d] = { normal: 0, extra: 0 };
+    });
+
+    cachedRecords.forEach(r => {
+      if (!r.date.startsWith(month)) return;
+      const day = parseInt(r.date.split("-")[2], 10);
+      if (map[r.sku] && day >= 1 && day <= 31) {
+        if (r.type === "extra") map[r.sku][day].extra += r.qty;
+        else map[r.sku][day].normal += r.qty;
       }
-      headHTML += `<th class="border border-slate-300 px-2 py-2 text-center bg-slate-200">รวม</th>`;
-      document.getElementById("reportTableHead").innerHTML = headHTML;
+    });
 
-      // 2. Render Table Body
-      const dailyBottleTotals = Array(32).fill(0);
-      let grandBottleTotal = 0;
+    let html = `<thead><tr><th class="col-name">รหัส / รายการเครื่องดื่ม</th>`;
+    for (let d = 1; d <= 31; d++) html += `<th>${d}</th>`;
+    html += `<th>รวม</th></tr></thead><tbody>`;
 
-      let bodyHTML = "";
-      PRODUCTS.forEach(p => {
-        let rowSum = 0;
-        const isOrange = p.isOrange;
-        const rowClass = isOrange ? "bg-amber-50/80 bg-orange-highlight text-amber-900" : "bg-white hover:bg-slate-50";
+    const dailyBottleTotals = Array(32).fill(0);
+    let grandBottleTotal = 0;
 
-        let rowCells = `
-          <td class="border border-slate-300 px-2 py-1.5 font-medium sticky left-0 ${isOrange ? 'bg-amber-50' : 'bg-white'} z-10 sticky-col">
-            <span class="text-[10px] text-slate-400 font-mono mr-1">${p.code}</span>${p.name}
-            ${isOrange ? '<span class="text-[9px] text-amber-700 ml-1">(ไม่รวมยอดขวด)</span>' : ''}
-          </td>
-        `;
+    PRODUCTS.forEach(p => {
+      let rowSum = 0;
+      html += `<tr class="${p.isBottle ? '' : 'row-orange'}">`;
+      html += `<td class="col-name"><small style="color:#64748b">${p.sku}</small> ${p.name}${!p.isBottle ? ' <small style="color:#c2410c">(ไม่รวมยอดขวด)</small>' : ''}</td>`;
 
-        for (let d = 1; d <= 31; d++) {
-          const val = matrix[p.code][d];
-          rowSum += val;
-          if (!isOrange) {
-            dailyBottleTotals[d] += val;
-            grandBottleTotal += val;
+      for (let d = 1; d <= 31; d++) {
+        const cell = map[p.sku][d];
+        let val = 0;
+        let display = "-";
+
+        if (filter === "all") {
+          val = cell.normal + cell.extra;
+          display = val > 0 ? val : "-";
+        } else if (filter === "normal") {
+          val = cell.normal;
+          display = val > 0 ? val : "-";
+        } else if (filter === "extra") {
+          val = cell.extra;
+          display = val > 0 ? `+${val}` : "-";
+        } else if (filter === "split") {
+          val = cell.normal + cell.extra;
+          if (val > 0) {
+            display = `${cell.normal}${cell.extra > 0 ? `<span class="extra-tag">+${cell.extra}</span>` : ''}`;
           }
-          rowCells += `<td class="border border-slate-300 px-1 py-1.5 text-center ${val > 0 ? 'font-semibold text-slate-900' : 'text-slate-300'}">${val > 0 ? val : '-'}</td>`;
         }
 
-        rowCells += `<td class="border border-slate-300 px-2 py-1.5 text-center font-bold bg-slate-50">${rowSum}</td>`;
-        bodyHTML += `<tr class="${rowClass}">${rowCells}</tr>`;
-      });
+        rowSum += val;
+        if (p.isBottle) dailyBottleTotals[d] += val;
 
-      document.getElementById("reportTableBody").innerHTML = bodyHTML;
-
-      // 3. Render Table Footer (ยอดรวมขวด/วัน ไม่นับรวมน้ำส้ม)
-      let footHTML = `
-        <tr class="bg-emerald-50 text-emerald-950 bg-total-highlight">
-          <td class="border border-slate-300 px-2 py-2 text-left sticky left-0 bg-emerald-100 z-10 sticky-col">รวมยอดขวด/วัน (ไม่รวมน้ำส้ม)</td>
-      `;
-      for (let d = 1; d <= 31; d++) {
-        const dayTotal = dailyBottleTotals[d];
-        footHTML += `<td class="border border-slate-300 px-1 py-2 text-center">${dayTotal > 0 ? dayTotal : '0'}</td>`;
+        html += `<td>${display}</td>`;
       }
-      footHTML += `<td class="border border-slate-300 px-2 py-2 text-center bg-emerald-200 text-emerald-950">${grandBottleTotal}</td></tr>`;
 
-      document.getElementById("reportTableFoot").innerHTML = footHTML;
-    }
+      if (p.isBottle) grandBottleTotal += rowSum;
+      html += `<td style="font-weight:700;">${rowSum}</td></tr>`;
+    });
 
-    function formatThaiDate(dateStr) {
-      if (!dateStr) return "";
-      const [y, m, d] = dateStr.split("-");
-      return `${d}/${m}/${parseInt(y) + 543}`;
+    html += `<tr class="row-total"><td class="col-name">รวมยอดขวดทั้งหมด (ไม่รวมน้ำส้ม)</td>`;
+    for (let d = 1; d <= 31; d++) {
+      html += `<td>${dailyBottleTotals[d] > 0 ? dailyBottleTotals[d] : '-'}</td>`;
     }
+    html += `<td>${grandBottleTotal}</td></tr></tbody>`;
 
-    function showToast(msg) {
-      const toast = document.getElementById("toast");
-      document.getElementById("toastMsg").textContent = msg;
-      toast.classList.remove("translate-y-24", "opacity-0");
-      setTimeout(() => {
-        toast.classList.add("translate-y-24", "opacity-0");
-      }, 3000);
-    }
-  </script>
+    document.getElementById("report-table").innerHTML = html;
+  }
+</script>
 </body>
 </html>
