@@ -1,766 +1,559 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>บันทึกการชงชา-กาแฟขวด | สาขาสนามกีฬาแห่งชาติ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #1e3a8a;
-      --primary-light: #3b82f6;
-      --accent: #f59e0b;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #cbd5e1;
-      --success: #10b981;
-      --danger: #ef4444;
-    }
-
-    * { box-sizing: border-box; font-family: 'Prompt', sans-serif; }
-    body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
-
-    header {
-      background: linear-gradient(135deg, var(--primary), #0f172a);
-      color: white;
-      padding: 16px 20px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    header h1 { margin: 0; font-size: 1.25rem; font-weight: 600; }
-    header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.9; }
-
-    .container { max-width: 1140px; margin: 16px auto; padding: 0 12px 32px; }
-
-    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-    .tab-btn {
-      flex: 1; padding: 12px; border: none; border-radius: 10px;
-      background: #e2e8f0; color: #475569; font-size: 1rem; font-weight: 600;
-      cursor: pointer; transition: 0.2s;
-    }
-    .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(30,58,138,0.2); }
-
-    .card {
-      background: var(--card); border-radius: 12px; padding: 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 16px;
-    }
-
-    /* URL Config Box */
-    .url-box {
-      border: 1px solid #bfdbfe;
-      background: #f8fafc;
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 16px;
-    }
-    .url-box-header {
-      display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-    .url-box-title { font-size: 0.9rem; font-weight: 600; color: var(--primary); }
-    .url-status { font-size: 0.78rem; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
-    .url-ok { background: #dcfce7; color: #166534; }
-    .url-missing { background: #fee2e2; color: #991b1b; }
-    .url-row { display: flex; gap: 8px; flex-wrap: wrap; }
-    .url-input {
-      flex: 1; min-width: 220px; padding: 9px 12px; border: 1px solid var(--border);
-      border-radius: 8px; font-size: 0.88rem; background: #fff;
-    }
-    .btn-save-url {
-      padding: 9px 14px; border: none; border-radius: 8px; background: var(--primary);
-      color: white; font-size: 0.88rem; font-weight: 600; cursor: pointer;
-    }
-    .btn-reset-url {
-      padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff;
-      color: #475569; font-size: 0.85rem; font-weight: 500; cursor: pointer;
-    }
-    .url-note { font-size: 0.76rem; color: var(--muted); margin-top: 6px; }
-
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 4px; color: #475569; }
-    .form-group input, .form-group select {
-      width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: #fff;
-    }
-
-    .type-selector { display: flex; gap: 10px; }
-    .type-option {
-      flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px;
-      text-align: center; cursor: pointer; font-weight: 500; transition: 0.2s;
-    }
-    .type-option.selected-normal { border-color: var(--primary-light); background: #eff6ff; color: var(--primary); }
-    .type-option.selected-extra { border-color: var(--accent); background: #fffbeb; color: #b45309; }
-
-    .item-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      padding: 10px 12px; border-bottom: 1px solid #f1f5f9;
-    }
-    .item-row:last-child { border-bottom: none; }
-    .item-row.orange-item { background: #fff7ed; border-radius: 8px; margin-top: 8px; border: 1px dashed #fdba74; }
-    .item-info { flex: 1; }
-    .item-sku { font-size: 0.75rem; color: var(--muted); display: block; }
-    .item-name { font-weight: 500; font-size: 0.95rem; }
-    .badge-exclude { font-size: 0.7rem; background: #ffedd5; color: #c2410c; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
-
-    .qty-control { display: flex; align-items: center; gap: 6px; }
-    .qty-btn {
-      width: 36px; height: 36px; border: 1px solid var(--border); background: #f8fafc;
-      border-radius: 8px; font-size: 1.15rem; font-weight: bold; cursor: pointer;
-    }
-    .qty-btn:active { background: #e2e8f0; }
-    .qty-input {
-      width: 60px; height: 36px; text-align: center; border: 1px solid var(--border);
-      border-radius: 8px; font-size: 1rem; font-weight: 600;
-    }
-
-    .summary-bar {
-      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
-      background: #f8fafc; padding: 12px 16px; border-radius: 10px; margin: 16px 0;
-      border: 1px solid var(--border); font-weight: 600;
-    }
-
-    .action-row { display: flex; gap: 10px; }
-    .btn-clear {
-      padding: 14px 18px; background: #e2e8f0; color: #334155;
-      border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer;
-    }
-    .btn-submit {
-      flex: 1; padding: 14px; background: var(--success); color: white;
-      border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 600;
-      cursor: pointer; transition: 0.2s;
-    }
-    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
-
-    .status-banner {
-      margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; display: none;
-    }
-    .status-ok { display: block; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-    .status-err { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-
-    .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
-    .log-title { font-size: 1rem; font-weight: 600; margin: 0; }
-    .log-card {
-      border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 10px;
-      background: #f8fafc;
-    }
-    .log-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .log-meta { font-size: 0.85rem; color: #475569; }
-    .tag-normal { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
-    .tag-extra { background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
-    .log-items { font-size: 0.85rem; margin-top: 6px; color: #1e293b; }
-    .btn-del {
-      background: #fee2e2; color: #b91c1c; border: none; border-radius: 6px;
-      padding: 4px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
-    }
-
-    .report-controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .btn-action {
-      padding: 9px 14px; border: none; border-radius: 8px; font-size: 0.9rem;
-      font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn-refresh { background: #e2e8f0; color: #1e293b; }
-    .btn-print { background: var(--primary); color: white; }
-
-    .table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
-    th, td { border: 1px solid #cbd5e1; padding: 6px 5px; text-align: center; }
-    th { background: #f1f5f9; font-weight: 600; color: #334155; }
-    td.col-name { text-align: left; position: sticky; left: 0; background: white; z-index: 2; font-weight: 500; min-width: 170px; }
-    th.col-name { text-align: left; position: sticky; left: 0; background: #f1f5f9; z-index: 3; }
-    tr.row-total td { background: #eff6ff; font-weight: 700; color: var(--primary); }
-    tr.row-total td.col-name { background: #eff6ff; }
-    tr.row-orange td { background: #fff7ed; }
-    tr.row-orange td.col-name { background: #fff7ed; }
-    .extra-tag { color: #d97706; font-size: 0.72rem; display: block; }
-
-    .print-header { display: none; }
-
+    body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    
+    /* ตั้งค่าสำหรับหน้าพิมพ์รายงาน (A4 แนวนอน) */
     @media print {
       @page { size: A4 landscape; margin: 8mm; }
-      body { background: white; }
-      header, .tabs, #tab-form, #recent-log-card, .no-print { display: none !important; }
-      .container { max-width: 100%; margin: 0; padding: 0; }
-      .card { box-shadow: none; padding: 0; margin: 0; }
-      .print-header { display: block; text-align: center; margin-bottom: 10px; }
-      .print-header h2 { margin: 0; font-size: 14pt; }
-      .print-header p { margin: 2px 0 0; font-size: 10pt; }
-      .table-wrapper { overflow: visible; border: none; }
-      table { font-size: 7.5pt; width: 100%; }
-      th, td { padding: 3px 2px; border: 1px solid #64748b; }
-      td.col-name, th.col-name { position: static; min-width: auto; }
-      .print-sign { display: flex !important; justify-content: space-between; margin-top: 20px; font-size: 9pt; }
+      body { background: #fff !important; font-size: 10px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      .print-container { width: 100% !important; max-width: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
+      table { width: 100% !important; border-collapse: collapse !important; font-size: 9px !important; }
+      th, td { border: 1px solid #94a3b8 !important; padding: 2px 3px !important; text-align: center !important; }
+      .sticky-col { position: static !important; }
     }
+    .print-only { display: none; }
   </style>
 </head>
-<body>
+<body class="text-slate-800 pb-12">
 
-<header>
-  <h1>บันทึกการชงชา-กาแฟขวด</h1>
-  <p>สาขา สนามกีฬาแห่งชาติ</p>
-</header>
-
-<div class="container">
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('form')">📝 บันทึกยอดชงรายวัน</button>
-    <button class="tab-btn" onclick="switchTab('report')">📊 รายงานประจำเดือน (1-31)</button>
-  </div>
-
-  <!-- TAB 1: FORM -->
-  <div id="tab-form">
-    <div class="card">
-      <!-- ช่องตั้งค่า Web App URL บนหน้าเว็บ -->
-      <div class="url-box no-print">
-        <div class="url-box-header">
-          <span class="url-box-title">🔗 ตั้งค่า Web App URL (Google Apps Script)</span>
-          <span id="url-badge" class="url-status url-missing">ยังไม่ได้ตั้งค่า</span>
+  <!-- Header -->
+  <header class="bg-emerald-800 text-white shadow-md no-print">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="bg-emerald-600 text-xs font-semibold px-2.5 py-0.5 rounded-full">Turtle Shop</span>
+          <h1 class="text-lg sm:text-xl font-bold">บันทึกการชงชา-กาแฟขวด / วัน</h1>
         </div>
-        <div class="url-row">
-          <input
-            type="url"
-            id="input-script-url"
-            class="url-input"
-            placeholder="วางลิงก์ที่ลงท้ายด้วย /exec ที่นี่..."
-          >
-          <button type="button" class="btn-save-url" onclick="saveScriptUrl()">บันทึก URL</button>
-          <button type="button" class="btn-reset-url" onclick="resetScriptUrl()">คืนค่าเริ่มต้น</button>
-        </div>
-        <div class="url-note">ระบบจะจำลิงก์ไว้ในเครื่องนี้โดยไม่ต้องแก้โค้ดใหม่เมื่อเปลี่ยน URL (หรือจะใส่ค่าเริ่มต้นใน DEFAULT_SCRIPT_URL ก็ได้)</div>
+        <p class="text-emerald-200 text-sm mt-0.5">สาขาสนามกีฬาแห่งชาติ</p>
       </div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>วันที่บันทึก</label>
-          <input type="date" id="input-date" onchange="renderDayLogs()">
-        </div>
-        <div class="form-group">
-          <label>ชื่อผู้บันทึก</label>
-          <input type="text" id="input-recorder" placeholder="เช่น บีม / กะเช้า">
-        </div>
+      
+      <!-- Navigation Tabs -->
+      <div class="flex bg-emerald-900/60 p-1 rounded-lg self-start sm:self-auto">
+        <button onclick="switchTab('form')" id="tab-form" class="px-4 py-1.5 rounded-md text-sm font-medium bg-white text-emerald-900 shadow transition">
+          📝 บันทึกยอดรายวัน
+        </button>
+        <button onclick="switchTab('report')" id="tab-report" class="px-4 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white transition">
+          📊 รายงาน 1-31 วัน
+        </button>
       </div>
+    </div>
+  </header>
 
-      <div class="form-group" style="margin-bottom: 14px;">
-        <label>ประเภทการชง</label>
-        <div class="type-selector">
-          <div id="btn-normal" class="type-option selected-normal" onclick="selectType('normal')">
-            🥤 ชงรอบปกติ / หลัก
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 mt-6 print-container">
+
+    <!-- ==================== TAB 1: ฟอร์มบันทึกประจำวัน ==================== -->
+    <section id="view-form" class="no-print">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6">
+        
+        <!-- Controls -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-5 border-b border-slate-100">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">วันที่บันทึก</label>
+            <input type="date" id="input-date" onchange="loadDayToForm()" class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
-          <div id="btn-extra" class="type-option" onclick="selectType('extra')">
-            ➕ ชงเพิ่มระหว่างวัน
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">ผู้บันทึก (ชื่อเล่น / รหัสพนักงาน)</label>
+            <input type="text" id="input-recorder" placeholder="ระบุชื่อผู้บันทึก..." class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
-        </div>
-      </div>
-
-      <div id="product-list"></div>
-
-      <div class="summary-bar">
-        <span>รวมยอดขวดครั้งนี้ (ไม่รวมน้ำส้ม):</span>
-        <span style="font-size: 1.2rem; color: var(--primary);"><span id="total-bottles">0</span> ขวด</span>
-      </div>
-
-      <div class="action-row">
-        <button type="button" class="btn-clear" onclick="clearForm()">ล้างค่า</button>
-        <button type="button" id="btn-submit" class="btn-submit" onclick="submitData()">บันทึกข้อมูลลงระบบ</button>
-      </div>
-
-      <div id="status-banner" class="status-banner"></div>
-    </div>
-
-    <div id="recent-log-card" class="card">
-      <div class="log-header">
-        <h2 class="log-title">ประวัติการบันทึกของวันที่เลือก (<span id="log-date-label">-</span>)</h2>
-        <button type="button" class="btn-action btn-refresh" onclick="syncMonthFromServer(true)">🔄 อัปเดตประวัติ</button>
-      </div>
-      <div id="day-logs-container" style="color: var(--muted); font-size: 0.9rem;">กำลังโหลด...</div>
-    </div>
-  </div>
-
-  <!-- TAB 2: REPORT -->
-  <div id="tab-report" class="card" style="display: none;">
-    <div class="report-controls no-print">
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
-        <label style="font-weight: 600;">เลือกเดือน:</label>
-        <input type="month" id="report-month" onchange="onMonthChange()" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
-        <select id="report-filter" onchange="renderTable()" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
-          <option value="all">แสดงยอดรวมทั้งหมด (ปกติ + เพิ่ม)</option>
-          <option value="split">แสดงแยกยอด (ปกติ / +เพิ่ม)</option>
-          <option value="normal">เฉพาะชงรอบปกติ</option>
-          <option value="extra">เฉพาะชงเพิ่ม</option>
-        </select>
-      </div>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn-action btn-refresh" onclick="syncMonthFromServer(true)">🔄 รีเฟรชข้อมูล</button>
-        <button class="btn-action btn-print" onclick="window.print()">🖨️ พิมพ์รายงานให้ผู้จัดการ</button>
-      </div>
-    </div>
-
-    <div class="print-header">
-      <h2>รายงานสรุปยอดการชงเครื่องดื่มขวดประจำเดือน <span id="print-month-label"></span></h2>
-      <p>สาขา สนามกีฬาแห่งชาติ | พิมพ์เมื่อ: <span id="print-date-label"></span></p>
-    </div>
-
-    <div id="loading-text" style="text-align: center; padding: 16px; display: none; color: var(--muted);">กำลังโหลดข้อมูลจาก Google Sheets...</div>
-
-    <div class="table-wrapper">
-      <table id="report-table"></table>
-    </div>
-
-    <div class="print-sign" style="display: none;">
-      <div>ผู้จัดทำรายงาน: ......................................................</div>
-      <div>ผู้จัดการสาขาตรวจสอบ: ......................................................</div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // ลิงก์ตั้งต้นในโค้ด (เว้นว่างไว้ได้หากต้องการวางผ่านช่องบนหน้าเว็บ หรือใส่ลิงก์ /exec ไว้เป็นค่าเริ่มต้น)
-  const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSsN3tRLxe0cEn-CR0HNRJvpbow8EH0q35FOBCPzuNhq0bOUqq2SD9plGniLTS-dqMEA/exec";
-  const STORAGE_URL_KEY = "drink_tracker_script_url_v1";
-
-  const PRODUCTS = [
-    { sku: "20000754", name: "อเมริกาโน", isBottle: true },
-    { sku: "20000563", name: "เอสเปรสโซ", isBottle: true },
-    { sku: "20000755", name: "ลาเต้", isBottle: true },
-    { sku: "20000564", name: "ชานมเอิร์ลเกรย์", isBottle: true },
-    { sku: "20000565", name: "ชาไทย", isBottle: true },
-    { sku: "20000809", name: "ชามะนาว", isBottle: true },
-    { sku: "20000648", name: "นมสดสตอเบอร์รี่", isBottle: true },
-    { sku: "20001048", name: "ดาร์คโกโก้", isBottle: true },
-    { sku: "20001180", name: "มัชฉะลาเต้เย็น", isBottle: true },
-    { sku: "20001181", name: "น้ำผึ้งมะนาวเย็น", isBottle: true },
-    { sku: "20000955", name: "น้ำส้ม", isBottle: false }
-  ];
-
-  let currentType = "normal";
-  let cachedRecords = [];
-  let loadedMonth = "";
-
-  function getScriptUrl() {
-    const saved = (localStorage.getItem(STORAGE_URL_KEY) || "").trim();
-    if (saved) return saved;
-    return (DEFAULT_SCRIPT_URL || "").trim();
-  }
-
-  function updateUrlBadge() {
-    const url = getScriptUrl();
-    const badge = document.getElementById("url-badge");
-    const isValid = /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(\?.*)?$/.test(url);
-    if (isValid) {
-      badge.className = "url-status url-ok";
-      badge.innerText = "พร้อมใช้งาน";
-    } else if (url) {
-      badge.className = "url-status url-missing";
-      badge.innerText = "รูปแบบ URL ไม่ใช่ /exec";
-    } else {
-      badge.className = "url-status url-missing";
-      badge.innerText = "ยังไม่ได้ตั้งค่า";
-    }
-  }
-
-  function saveScriptUrl() {
-    const input = document.getElementById("input-script-url");
-    const val = input.value.trim();
-    if (!val) {
-      localStorage.removeItem(STORAGE_URL_KEY);
-      input.value = getScriptUrl();
-      updateUrlBadge();
-      showBanner("ล้าง URL ที่บันทึกไว้ในเครื่องแล้ว", false);
-      return;
-    }
-    localStorage.setItem(STORAGE_URL_KEY, val);
-    updateUrlBadge();
-    showBanner("✅ บันทึก Web App URL ลงเครื่องเรียบร้อยแล้ว", false);
-    loadedMonth = "";
-    syncMonthFromServer(true);
-  }
-
-  function resetScriptUrl() {
-    localStorage.removeItem(STORAGE_URL_KEY);
-    document.getElementById("input-script-url").value = DEFAULT_SCRIPT_URL;
-    updateUrlBadge();
-    showBanner("คืนค่า URL เริ่มต้นแล้ว", false);
-    loadedMonth = "";
-    syncMonthFromServer(true);
-  }
-
-  window.onload = () => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const todayStr = `${yyyy}-${mm}-${dd}`;
-    const monthStr = `${yyyy}-${mm}`;
-
-    document.getElementById("input-date").value = todayStr;
-    document.getElementById("report-month").value = monthStr;
-    document.getElementById("input-script-url").value = getScriptUrl();
-    updateUrlBadge();
-
-    const savedRecorder = localStorage.getItem("recorder_name");
-    if (savedRecorder) document.getElementById("input-recorder").value = savedRecorder;
-
-    renderProductInputs();
-    syncMonthFromServer(true, monthStr);
-  };
-
-  function renderProductInputs() {
-    const container = document.getElementById("product-list");
-    container.innerHTML = PRODUCTS.map((p, idx) => `
-      <div class="item-row ${p.isBottle ? '' : 'orange-item'}">
-        <div class="item-info">
-          <span class="item-sku">${p.sku}</span>
-          <span class="item-name">${p.name}</span>
-          ${!p.isBottle ? '<span class="badge-exclude">ไม่นับรวมยอดขวด</span>' : ''}
-        </div>
-        <div class="qty-control">
-          <button type="button" class="qty-btn" onclick="adjustQty(${idx}, -1)">-</button>
-          <input
-            type="text"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            value="0"
-            id="qty-${idx}"
-            class="qty-input"
-            onfocus="this.select()"
-            oninput="sanitizeQtyInput(this)"
-          >
-          <button type="button" class="qty-btn" onclick="adjustQty(${idx}, 1)">+</button>
-        </div>
-      </div>
-    `).join("");
-  }
-
-  function sanitizeQtyInput(input) {
-    const cleaned = input.value.replace(/[^0-9]/g, "");
-    input.value = cleaned === "" ? "0" : String(parseInt(cleaned, 10));
-    calcTotal();
-  }
-
-  function adjustQty(idx, delta) {
-    const input = document.getElementById(`qty-${idx}`);
-    let val = parseInt(input.value, 10) || 0;
-    val = Math.max(0, val + delta);
-    input.value = String(val);
-    calcTotal();
-  }
-
-  function calcTotal() {
-    let totalBottles = 0;
-    PRODUCTS.forEach((p, idx) => {
-      if (p.isBottle) {
-        totalBottles += parseInt(document.getElementById(`qty-${idx}`).value, 10) || 0;
-      }
-    });
-    document.getElementById("total-bottles").innerText = totalBottles;
-  }
-
-  function clearForm() {
-    PRODUCTS.forEach((_, idx) => {
-      document.getElementById(`qty-${idx}`).value = "0";
-    });
-    calcTotal();
-    hideBanner();
-  }
-
-  function showBanner(msg, isError) {
-    const el = document.getElementById("status-banner");
-    el.className = "status-banner " + (isError ? "status-err" : "status-ok");
-    el.innerText = msg;
-  }
-
-  function hideBanner() {
-    const el = document.getElementById("status-banner");
-    el.className = "status-banner";
-    el.innerText = "";
-  }
-
-  function selectType(type) {
-    currentType = type;
-    document.getElementById("btn-normal").className = "type-option" + (type === "normal" ? " selected-normal" : "");
-    document.getElementById("btn-extra").className = "type-option" + (type === "extra" ? " selected-extra" : "");
-  }
-
-  function switchTab(tab) {
-    document.querySelectorAll(".tab-btn").forEach((b, i) => {
-      b.classList.toggle("active", (tab === "form" && i === 0) || (tab === "report" && i === 1));
-    });
-    document.getElementById("tab-form").style.display = tab === "form" ? "block" : "none";
-    document.getElementById("tab-report").style.display = tab === "report" ? "block" : "none";
-
-    if (tab === "report") {
-      const m = document.getElementById("report-month").value;
-      if (m !== loadedMonth) {
-        syncMonthFromServer(true, m);
-      } else {
-        renderTable();
-      }
-    } else {
-      renderDayLogs();
-    }
-  }
-
-  function onMonthChange() {
-    const m = document.getElementById("report-month").value;
-    syncMonthFromServer(true, m);
-  }
-
-  async function syncMonthFromServer(force = false, targetMonth = null) {
-    const scriptUrl = getScriptUrl();
-    if (!scriptUrl) {
-      document.getElementById("day-logs-container").innerText = "กรุณาวาง Web App URL ในช่องด้านบนก่อนใช้งาน";
-      return;
-    }
-
-    const activeTabReport = document.getElementById("tab-report").style.display !== "none";
-    const dateInputVal = document.getElementById("input-date").value;
-    const monthToLoad = targetMonth || (activeTabReport ? document.getElementById("report-month").value : dateInputVal.slice(0, 7));
-
-    if (!monthToLoad) return;
-    if (!force && loadedMonth === monthToLoad) {
-      renderDayLogs();
-      renderTable();
-      return;
-    }
-
-    document.getElementById("loading-text").style.display = "block";
-    try {
-      const sep = scriptUrl.includes("?") ? "&" : "?";
-      const res = await fetch(`${scriptUrl}${sep}month=${encodeURIComponent(monthToLoad)}`);
-      const data = await res.json();
-      if (data.status !== "success") throw new Error(data.message || "โหลดข้อมูลไม่สำเร็จ");
-
-      cachedRecords = data.records || [];
-      loadedMonth = monthToLoad;
-      renderDayLogs();
-      renderTable();
-    } catch (err) {
-      document.getElementById("day-logs-container").innerText = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
-    } finally {
-      document.getElementById("loading-text").style.display = "none";
-    }
-  }
-
-  async function submitData() {
-    const scriptUrl = getScriptUrl();
-    if (!scriptUrl) {
-      showBanner("กรุณาวาง Web App URL ในช่องตั้งค่าด้านบนก่อนบันทึก", true);
-      return;
-    }
-
-    const date = document.getElementById("input-date").value;
-    const recorder = document.getElementById("input-recorder").value.trim();
-    if (!date) {
-      showBanner("กรุณาเลือกวันที่บันทึก", true);
-      return;
-    }
-
-    if (recorder) localStorage.setItem("recorder_name", recorder);
-
-    const items = [];
-    PRODUCTS.forEach((p, idx) => {
-      const qty = parseInt(document.getElementById(`qty-${idx}`).value, 10) || 0;
-      if (qty > 0) {
-        items.push({ sku: p.sku, name: p.name, qty });
-      }
-    });
-
-    if (items.length === 0) {
-      showBanner("กรุณากรอกจำนวนอย่างน้อย 1 รายการก่อนบันทึก", true);
-      return;
-    }
-
-    const btn = document.getElementById("btn-submit");
-    btn.disabled = true;
-    btn.innerText = "กำลังบันทึก...";
-    hideBanner();
-
-    const batchId = "B" + Date.now();
-
-    try {
-      const res = await fetch(scriptUrl, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ date, type: currentType, items, recorder, batchId })
-      });
-      const result = await res.json();
-      if (result.status !== "success") {
-        throw new Error(result.message || "บันทึกไม่สำเร็จ");
-      }
-
-      showBanner(`✅ บันทึกข้อมูลเรียบร้อยแล้ว (${result.added} รายการ)`, false);
-      clearForm();
-
-      const recordMonth = date.slice(0, 7);
-      await syncMonthFromServer(true, recordMonth);
-    } catch (err) {
-      showBanner("❌ บันทึกไม่สำเร็จ: " + err.message, true);
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "บันทึกข้อมูลลงระบบ";
-    }
-  }
-
-  async function deleteBatch(batchId) {
-    const scriptUrl = getScriptUrl();
-    if (!scriptUrl) return;
-    if (!confirm("ต้องการลบรายการที่บันทึกชุดนี้ใช่หรือไม่?")) return;
-
-    try {
-      const res = await fetch(scriptUrl, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "deleteBatch", batchId })
-      });
-      const result = await res.json();
-      if (result.status !== "success") throw new Error(result.message || "ลบไม่สำเร็จ");
-
-      showBanner(`🗑️ ลบรายการเรียบร้อยแล้ว (${result.deleted} แถว)`, false);
-      await syncMonthFromServer(true, loadedMonth);
-    } catch (err) {
-      showBanner("❌ ลบรายการไม่สำเร็จ: " + err.message, true);
-    }
-  }
-
-  function renderDayLogs() {
-    const selectedDate = document.getElementById("input-date").value;
-    document.getElementById("log-date-label").innerText = selectedDate || "-";
-    const container = document.getElementById("day-logs-container");
-
-    if (!selectedDate) {
-      container.innerText = "กรุณาเลือกวันที่";
-      return;
-    }
-
-    const targetMonth = selectedDate.slice(0, 7);
-    if (loadedMonth && loadedMonth !== targetMonth) {
-      syncMonthFromServer(true, targetMonth);
-      return;
-    }
-
-    const bottleSkus = new Set(PRODUCTS.filter(p => p.isBottle).map(p => p.sku));
-    const dayRecs = cachedRecords.filter(r => r.date === selectedDate);
-
-    if (dayRecs.length === 0) {
-      container.innerText = "ยังไม่มีการบันทึกข้อมูลในวันที่เลือก";
-      return;
-    }
-
-    const groups = new Map();
-    dayRecs.forEach(r => {
-      const key = r.batchId || `row-${r.rowIndex}`;
-      if (!groups.has(key)) {
-        groups.set(key, {
-          batchId: r.batchId,
-          type: r.type,
-          recorder: r.recorder || "-",
-          bottleSum: 0,
-          orangeSum: 0,
-          parts: []
-        });
-      }
-      const g = groups.get(key);
-      if (bottleSkus.has(r.sku)) g.bottleSum += r.qty;
-      else g.orangeSum += r.qty;
-      g.parts.push(`${r.name} ${r.qty}`);
-    });
-
-    const list = Array.from(groups.values()).reverse();
-    container.innerHTML = list.map(g => {
-      const badge = g.type === "extra"
-        ? `<span class="tag-extra">ชงเพิ่ม</span>`
-        : `<span class="tag-normal">ชงปกติ</span>`;
-      const delBtn = g.batchId
-        ? `<button type="button" class="btn-del" onclick="deleteBatch('${g.batchId}')">ลบชุดนี้</button>`
-        : "";
-      const orangeNote = g.orangeSum > 0 ? ` | น้ำส้ม: <b>${g.orangeSum}</b>` : "";
-
-      return `
-        <div class="log-card">
-          <div class="log-top">
-            <div class="log-meta">
-              ${badge} ผู้บันทึก: <b>${g.recorder}</b> | รวมขวด: <b>${g.bottleSum}</b> ขวด${orangeNote}
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
+            <div>
+              <p class="text-xs text-emerald-700 font-medium">ยอดรวมขวดวันนี้ (ไม่รวมน้ำส้ม)</p>
+              <p class="text-xs text-slate-500 mt-0.5">ชงหลัก + ชงเพิ่ม</p>
             </div>
-            ${delBtn}
+            <div class="text-right">
+              <span id="live-total-bottles" class="text-2xl font-bold text-emerald-800">0</span>
+              <span class="text-xs text-emerald-700 font-medium ml-1">ขวด</span>
+            </div>
           </div>
-          <div class="log-items">${g.parts.join(", ")}</div>
         </div>
-      `;
-    }).join("");
-  }
 
-  function renderTable() {
-    const month = document.getElementById("report-month").value;
-    const filter = document.getElementById("report-filter").value;
+        <!-- Product List -->
+        <div class="mt-5">
+          <div class="hidden sm:grid sm:grid-cols-12 gap-3 px-3 py-2 bg-slate-100 rounded-lg text-xs font-semibold text-slate-600">
+            <div class="col-span-2">รหัสสินค้า</div>
+            <div class="col-span-4">รายการเครื่องดื่ม</div>
+            <div class="col-span-3 text-center">ชงรอบหลัก (ขวด/แก้ว)</div>
+            <div class="col-span-3 text-center">ทำขวดเพิ่มระหว่างวัน</div>
+          </div>
 
-    document.getElementById("print-month-label").innerText = month;
-    document.getElementById("print-date-label").innerText = new Date().toLocaleDateString("th-TH");
+          <div id="product-inputs" class="divide-y divide-slate-100 mt-2">
+            <!-- Render via JS -->
+          </div>
+        </div>
 
-    const map = {};
-    PRODUCTS.forEach(p => {
-      map[p.sku] = {};
-      for (let d = 1; d <= 31; d++) map[p.sku][d] = { normal: 0, extra: 0 };
+        <!-- Submit Bar -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-xs text-slate-500">* หากบันทึกวันที่เดิมซ้ำ ระบบจะอัปเดตข้อมูลล่าสุดของวันนั้นให้โดยอัตโนมัติ</p>
+          <div class="flex gap-3 w-full sm:w-auto">
+            <button type="button" onclick="resetForm()" class="w-1/3 sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 text-sm font-medium hover:bg-slate-50 transition">
+              ล้างค่า
+            </button>
+            <button type="button" onclick="submitData()" id="btn-submit" class="w-2/3 sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold shadow-sm transition flex items-center justify-center gap-2">
+              <span>💾 บันทึกข้อมูลลงระบบ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: รายงานตาราง 1-31 ==================== -->
+    <section id="view-report" class="hidden">
+      
+      <!-- Filter & Print Controls (No Print) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print">
+        <div class="flex items-center gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">เลือกเดือนที่ต้องการดูย้อนหลัง</label>
+            <input type="month" id="report-month" onchange="fetchMonthReport()" class="border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <button onclick="fetchMonthReport()" class="mt-5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition">
+            🔄 รีเฟรช
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition flex items-center justify-center gap-2">
+            🖨️ พิมพ์รายงานให้ผู้จัดการ (A4)
+          </button>
+        </div>
+      </div>
+
+      <!-- Print Header (Visible Only When Printing) -->
+      <div class="print-only mb-3">
+        <div class="flex justify-between items-end border-b-2 border-slate-800 pb-2">
+          <div>
+            <h2 class="text-base font-bold">รายงานสรุปจำนวนการชงชา-กาแฟขวดประจำเดือน</h2>
+            <p class="text-xs">สาขาสนามกีฬาแห่งชาติ | ประจำเดือน: <span id="print-month-label" class="font-bold"></span></p>
+          </div>
+          <div class="text-right text-xs">
+            <p>หมายเหตุ: ยอดรวมขวดไม่นับรวมรายการน้ำส้ม (20000955)</p>
+            <p>รูปแบบตัวเลขในช่อง: <b>ชงหลัก</b> <span class="text-slate-600">(+เพิ่ม)</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 no-print">
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200">
+          <p class="text-xs text-slate-500">รวมชงหลักทั้งเดือน (ขวด)</p>
+          <p id="sum-month-main" class="text-xl font-bold text-slate-800 mt-1">0</p>
+        </div>
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200">
+          <p class="text-xs text-slate-500">รวมทำขวดเพิ่มทั้งเดือน</p>
+          <p id="sum-month-extra" class="text-xl font-bold text-amber-600 mt-1">0</p>
+        </div>
+        <div class="bg-emerald-50 p-3.5 rounded-xl border border-emerald-200">
+          <p class="text-xs text-emerald-800 font-medium">ยอดขวดสุทธิ (ไม่รวมน้ำส้ม)</p>
+          <p id="sum-month-net" class="text-xl font-bold text-emerald-700 mt-1">0</p>
+        </div>
+        <div class="bg-orange-50 p-3.5 rounded-xl border border-orange-200">
+          <p class="text-xs text-orange-800 font-medium">ยอดน้ำส้มรวม (แยกต่างหาก)</p>
+          <p id="sum-month-orange" class="text-xl font-bold text-orange-600 mt-1">0</p>
+        </div>
+      </div>
+
+      <!-- Report Table Container -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-container">
+        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center text-xs text-slate-600 no-print">
+          <span>* ตัวเลขสีดำ = ชงรอบหลัก | <span class="text-amber-600 font-semibold">+ตัวเลขสีส้ม</span> = ทำขวดเพิ่มระหว่างวัน</span>
+          <span id="loading-indicator" class="hidden text-emerald-600 font-semibold">กำลังโหลดข้อมูล...</span>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead id="report-thead" class="bg-slate-100 text-slate-700 font-semibold">
+              <!-- Render via JS -->
+            </thead>
+            <tbody id="report-tbody" class="divide-y divide-slate-200">
+              <!-- Render via JS -->
+            </tbody>
+            <tfoot id="report-tfoot" class="bg-slate-100 font-bold text-slate-800">
+              <!-- Render via JS -->
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Print Footer Signatures -->
+      <div class="print-only mt-6 pt-4">
+        <div class="grid grid-cols-2 gap-8 text-center text-xs">
+          <div>
+            <p>ลงชื่อ ....................................................... ผู้จัดทำรายงาน</p>
+            <p class="mt-1">( ....................................................... )</p>
+            <p class="mt-0.5">วันที่ ........../........../..........</p>
+          </div>
+          <div>
+            <p>ลงชื่อ ....................................................... ผู้จัดการสาขา</p>
+            <p class="mt-1">( ....................................................... )</p>
+            <p class="mt-0.5">วันที่ ........../........../..........</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    ข้อความแจ้งเตือน
+  </div>
+
+  <script>
+    // =========================================================================
+    // ใส่ URL ของ Google Apps Script Web App ที่ Deploy แล้วตรงนี้
+    // =========================================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHl6T_LqWfIB80hBohUMdO68DoJe0JvcUmf7Pkq0JMkhIH5zC6QF4exdW0kFRie_8hPQ/exec";
+
+    const PRODUCTS = [
+      { code: "20000754", name: "อเมริกาโน", isBottle: true },
+      { code: "20000563", name: "เอสเปรสโซ", isBottle: true },
+      { code: "20000755", name: "ลาเต้", isBottle: true },
+      { code: "20000564", name: "ชานมเอิร์ลเกรย์", isBottle: true },
+      { code: "20000565", name: "ชาไทย", isBottle: true },
+      { code: "20000809", name: "ชามะนาว", isBottle: true },
+      { code: "20000648", name: "นมสดสตอเบอร์รี่", isBottle: true },
+      { code: "20001048", name: "ดาร์คโกโก้", isBottle: true },
+      { code: "20001180", name: "มัชฉะลาเต้เย็น", isBottle: true },
+      { code: "20001181", name: "น้ำผึ้งมะนาวเย็น", isBottle: true },
+      { code: "20000955", name: "น้ำส้ม", isBottle: false }
+    ];
+
+    let cachedMonthData = {};
+
+    // Initialize Page
+    window.addEventListener("DOMContentLoaded", () => {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+
+      document.getElementById("input-date").value = `${yyyy}-${mm}-${dd}`;
+      document.getElementById("report-month").value = `${yyyy}-${mm}`;
+
+      renderFormInputs();
+      loadDayToForm();
     });
 
-    cachedRecords.forEach(r => {
-      if (!r.date.startsWith(month)) return;
-      const day = parseInt(r.date.split("-")[2], 10);
-      if (map[r.sku] && day >= 1 && day <= 31) {
-        if (r.type === "extra") map[r.sku][day].extra += r.qty;
-        else map[r.sku][day].normal += r.qty;
+    function switchTab(tab) {
+      const viewForm = document.getElementById("view-form");
+      const viewReport = document.getElementById("view-report");
+      const tabForm = document.getElementById("tab-form");
+      const tabReport = document.getElementById("tab-report");
+
+      if (tab === "form") {
+        viewForm.classList.remove("hidden");
+        viewReport.classList.add("hidden");
+        tabForm.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-white text-emerald-900 shadow transition";
+        tabReport.className = "px-4 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white transition";
+      } else {
+        viewForm.classList.add("hidden");
+        viewReport.classList.remove("hidden");
+        tabReport.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-white text-emerald-900 shadow transition";
+        tabForm.className = "px-4 py-1.5 rounded-md text-sm font-medium text-emerald-100 hover:text-white transition";
+        fetchMonthReport();
       }
-    });
+    }
 
-    let html = `<thead><tr><th class="col-name">รหัส / รายการเครื่องดื่ม</th>`;
-    for (let d = 1; d <= 31; d++) html += `<th>${d}</th>`;
-    html += `<th>รวม</th></tr></thead><tbody>`;
+    // สร้างช่องกรอกข้อมูลทั้ง 11 รายการ
+    function renderFormInputs() {
+      const container = document.getElementById("product-inputs");
+      container.innerHTML = PRODUCTS.map(p => `
+        <div class="py-3 px-2 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-3 items-center hover:bg-slate-50/80 transition ${!p.isBottle ? 'bg-orange-50/50 rounded-xl' : ''}">
+          <div class="sm:col-span-2 flex items-center justify-between sm:block">
+            <span class="font-mono text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">${p.code}</span>
+            ${!p.isBottle ? '<span class="sm:hidden text-[11px] font-medium text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full">ไม่นับรวมยอดขวด</span>' : ''}
+          </div>
+          <div class="sm:col-span-4 flex items-center gap-2">
+            <span class="font-medium text-sm text-slate-800">${p.name}</span>
+            ${!p.isBottle ? '<span class="hidden sm:inline-block text-[10px] font-medium text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full">ไม่นับรวมขวด</span>' : ''}
+          </div>
+          
+          <!-- ชงหลัก -->
+          <div class="sm:col-span-3 flex items-center justify-between sm:justify-center gap-1.5">
+            <span class="text-xs text-slate-500 sm:hidden">ชงรอบหลัก:</span>
+            <div class="flex items-center">
+              <button type="button" onclick="stepVal('main-${p.code}', -1)" class="w-8 h-8 rounded-l-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-600">-</button>
+              <input type="number" id="main-${p.code}" min="0" value="0" oninput="calcLiveTotal()" class="w-14 h-8 text-center border-y border-slate-200 text-sm font-semibold focus:outline-none focus:bg-emerald-50" />
+              <button type="button" onclick="stepVal('main-${p.code}', 1)" class="w-8 h-8 rounded-r-lg bg-slate-100 hover:bg-slate-200 font-bold text-slate-600">+</button>
+            </div>
+          </div>
 
-    const dailyBottleTotals = Array(32).fill(0);
-    let grandBottleTotal = 0;
+          <!-- ชงเพิ่ม -->
+          <div class="sm:col-span-3 flex items-center justify-between sm:justify-center gap-1.5">
+            <span class="text-xs text-amber-700 sm:hidden">ทำขวดเพิ่ม:</span>
+            <div class="flex items-center">
+              <button type="button" onclick="stepVal('extra-${p.code}', -1)" class="w-8 h-8 rounded-l-lg bg-amber-50 hover:bg-amber-100 font-bold text-amber-700 border border-amber-200">-</button>
+              <input type="number" id="extra-${p.code}" min="0" value="0" oninput="calcLiveTotal()" class="w-14 h-8 text-center border-y border-amber-200 text-sm font-semibold text-amber-800 focus:outline-none focus:bg-amber-50" />
+              <button type="button" onclick="stepVal('extra-${p.code}', 1)" class="w-8 h-8 rounded-r-lg bg-amber-50 hover:bg-amber-100 font-bold text-amber-700 border border-amber-200">+</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
 
-    PRODUCTS.forEach(p => {
-      let rowSum = 0;
-      html += `<tr class="${p.isBottle ? '' : 'row-orange'}">`;
-      html += `<td class="col-name"><small style="color:#64748b">${p.sku}</small> ${p.name}${!p.isBottle ? ' <small style="color:#c2410c">(ไม่รวมยอดขวด)</small>' : ''}</td>`;
+    function stepVal(id, delta) {
+      const el = document.getElementById(id);
+      const val = Math.max(0, (parseInt(el.value, 10) || 0) + delta);
+      el.value = val;
+      calcLiveTotal();
+    }
 
-      for (let d = 1; d <= 31; d++) {
-        const cell = map[p.sku][d];
-        let val = 0;
-        let display = "-";
+    function calcLiveTotal() {
+      let total = 0;
+      PRODUCTS.forEach(p => {
+        if (p.isBottle) {
+          const m = parseInt(document.getElementById(`main-${p.code}`).value, 10) || 0;
+          const e = parseInt(document.getElementById(`extra-${p.code}`).value, 10) || 0;
+          total += (m + e);
+        }
+      });
+      document.getElementById("live-total-bottles").textContent = total;
+    }
 
-        if (filter === "all") {
-          val = cell.normal + cell.extra;
-          display = val > 0 ? val : "-";
-        } else if (filter === "normal") {
-          val = cell.normal;
-          display = val > 0 ? val : "-";
-        } else if (filter === "extra") {
-          val = cell.extra;
-          display = val > 0 ? `+${val}` : "-";
-        } else if (filter === "split") {
-          val = cell.normal + cell.extra;
-          if (val > 0) {
-            display = `${cell.normal}${cell.extra > 0 ? `<span class="extra-tag">+${cell.extra}</span>` : ''}`;
+    function resetForm() {
+      PRODUCTS.forEach(p => {
+        document.getElementById(`main-${p.code}`).value = 0;
+        document.getElementById(`extra-${p.code}`).value = 0;
+      });
+      calcLiveTotal();
+    }
+
+    // โหลดข้อมูลเดิมของวันที่เลือกมาใส่ในฟอร์ม (ถ้าเคยบันทึกไว้แล้ว)
+    async function loadDayToForm() {
+      const dateStr = document.getElementById("input-date").value;
+      if (!dateStr || SCRIPT_URL.includes("YOUR_APPS_SCRIPT")) return;
+
+      const monthKey = dateStr.substring(0, 7);
+      const day = parseInt(dateStr.split("-")[2], 10);
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getMonthData&month=${monthKey}`);
+        const json = await res.json();
+        if (json.status === "success") {
+          cachedMonthData[monthKey] = json.records;
+          const dayRecord = json.records[day];
+          if (dayRecord) {
+            document.getElementById("input-recorder").value = dayRecord.recorder || "";
+            PRODUCTS.forEach(p => {
+              document.getElementById(`main-${p.code}`).value = dayRecord.items[p.code]?.main || 0;
+              document.getElementById(`extra-${p.code}`).value = dayRecord.items[p.code]?.extra || 0;
+            });
+            showToast(`โหลดข้อมูลเดิมของวันที่ ${dateStr} แล้ว`);
+          } else {
+            resetForm();
           }
+          calcLiveTotal();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // บันทึกข้อมูลส่งไปยัง Google Sheets
+    async function submitData() {
+      if (SCRIPT_URL.includes("YOUR_APPS_SCRIPT")) {
+        alert("กรุณาใส่ Web App URL จาก Google Apps Script ในโค้ดก่อนใช้งาน");
+        return;
+      }
+
+      const dateStr = document.getElementById("input-date").value;
+      const recorder = document.getElementById("input-recorder").value.trim();
+
+      if (!dateStr) {
+        showToast("กรุณาเลือกวันที่ก่อนบันทึก", true);
+        return;
+      }
+
+      const items = {};
+      PRODUCTS.forEach(p => {
+        items[p.code] = {
+          main: parseInt(document.getElementById(`main-${p.code}`).value, 10) || 0,
+          extra: parseInt(document.getElementById(`extra-${p.code}`).value, 10) || 0
+        };
+      });
+
+      const btn = document.getElementById("btn-submit");
+      btn.disabled = true;
+      btn.innerHTML = "<span>⏳ กำลังบันทึก...</span>";
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "saveDaily",
+            date: dateStr,
+            recorder: recorder,
+            items: items
+          })
+        });
+        const result = await res.json();
+        if (result.status === "success") {
+          showToast("✅ บันทึกข้อมูลลง Google Sheet สำเร็จ!");
+          delete cachedMonthData[dateStr.substring(0, 7)]; // เคลียร์แคชเดือนนั้น
+        } else {
+          showToast("❌ เกิดข้อผิดพลาด: " + result.message, true);
+        }
+      } catch (err) {
+        showToast("❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้", true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "<span>💾 บันทึกข้อมูลลงระบบ</span>";
+      }
+    }
+
+    // ดึงข้อมูลรายงานทั้งเดือน (วันที่ 1 - 31)
+    async function fetchMonthReport() {
+      const monthKey = document.getElementById("report-month").value;
+      if (!monthKey) return;
+
+      document.getElementById("print-month-label").textContent = formatThaiMonth(monthKey);
+      const loader = document.getElementById("loading-indicator");
+      loader.classList.remove("hidden");
+
+      if (SCRIPT_URL.includes("YOUR_APPS_SCRIPT")) {
+        renderReportTable(monthKey, {});
+        loader.classList.add("hidden");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getMonthData&month=${monthKey}`);
+        const json = await res.json();
+        if (json.status === "success") {
+          cachedMonthData[monthKey] = json.records;
+          renderReportTable(monthKey, json.records);
+        }
+      } catch (err) {
+        showToast("❌ โหลดข้อมูลรายงานไม่สำเร็จ", true);
+      } finally {
+        loader.classList.add("hidden");
+      }
+    }
+
+    // สร้างตารางรายงาน 1 - 31
+    function renderReportTable(monthKey, records) {
+      const thead = document.getElementById("report-thead");
+      const tbody = document.getElementById("report-tbody");
+      const tfoot = document.getElementById("report-tfoot");
+
+      // สร้างหัวตาราง (1 - 31)
+      let headHtml = `<tr>
+        <th class="py-2.5 px-2 border border-slate-200 sticky left-0 bg-slate-100 z-10 min-w-[135px] sticky-col">รายการเครื่องดื่ม</th>`;
+      for (let d = 1; d <= 31; d++) {
+        headHtml += `<th class="py-2 px-1 border border-slate-200 text-center min-w-[28px]">${d}</th>`;
+      }
+      headHtml += `<th class="py-2 px-2 border border-slate-200 text-center bg-slate-200 min-w-[55px]">รวม</th></tr>`;
+      thead.innerHTML = headHtml;
+
+      // ตัวแปรเก็บผลรวมรายวัน (1-31) เฉพาะขวด (ไม่รวมน้ำส้ม)
+      const dailyBottleMain = Array(32).fill(0);
+      const dailyBottleExtra = Array(32).fill(0);
+
+      let monthMainTotal = 0;
+      let monthExtraTotal = 0;
+      let monthOrangeTotal = 0;
+
+      // สร้างแถวแต่ละเมนู
+      let bodyHtml = "";
+      PRODUCTS.forEach(p => {
+        let rowMainSum = 0;
+        let rowExtraSum = 0;
+
+        bodyHtml += `<tr class="${!p.isBottle ? 'bg-orange-50/60' : 'hover:bg-slate-50'}">
+          <td class="py-1.5 px-2 border border-slate-200 sticky left-0 ${!p.isBottle ? 'bg-orange-50' : 'bg-white'} z-10 font-medium sticky-col">
+            <div class="text-[10px] text-slate-400 font-mono leading-none">${p.code}</div>
+            <div class="text-slate-800 leading-tight mt-0.5">${p.name}</div>
+          </td>`;
+
+        for (let d = 1; d <= 31; d++) {
+          const item = records[d]?.items?.[p.code];
+          const m = item ? item.main : 0;
+          const e = item ? item.extra : 0;
+
+          rowMainSum += m;
+          rowExtraSum += e;
+
+          if (p.isBottle) {
+            dailyBottleMain[d] += m;
+            dailyBottleExtra[d] += e;
+          }
+
+          let cellContent = `<span class="text-slate-300">-</span>`;
+          if (m > 0 || e > 0) {
+            cellContent = `<span class="font-semibold text-slate-800">${m}</span>` +
+              (e > 0 ? `<span class="text-[10px] text-amber-600 font-bold block leading-none">+${e}</span>` : "");
+          }
+
+          bodyHtml += `<td class="py-1 px-0.5 border border-slate-200 text-center align-middle">${cellContent}</td>`;
         }
 
-        rowSum += val;
-        if (p.isBottle) dailyBottleTotals[d] += val;
+        if (p.isBottle) {
+          monthMainTotal += rowMainSum;
+          monthExtraTotal += rowExtraSum;
+        } else {
+          monthOrangeTotal += (rowMainSum + rowExtraSum);
+        }
 
-        html += `<td>${display}</td>`;
+        bodyHtml += `<td class="py-1.5 px-1.5 border border-slate-200 text-center font-bold bg-slate-50">
+          ${rowMainSum + rowExtraSum}
+          ${rowExtraSum > 0 ? `<span class="block text-[9px] text-amber-600 font-normal">(+${rowExtraSum})</span>` : ""}
+        </td></tr>`;
+      });
+
+      tbody.innerHTML = bodyHtml;
+
+      // สร้างแถวสรุปยอดรวมขวดรายวัน (ไม่รวมน้ำส้ม)
+      let footHtml = `<tr class="bg-emerald-50 text-emerald-950">
+        <td class="py-2 px-2 border border-slate-300 sticky left-0 bg-emerald-100 z-10 sticky-col">
+          รวมขวด/วัน<br><span class="text-[10px] font-normal text-emerald-700">(ไม่รวมน้ำส้ม)</span>
+        </td>`;
+
+      for (let d = 1; d <= 31; d++) {
+        const dTotal = dailyBottleMain[d] + dailyBottleExtra[d];
+        footHtml += `<td class="py-1.5 px-0.5 border border-slate-300 text-center">
+          ${dTotal > 0 ? dTotal : "-"}
+        </td>`;
       }
 
-      if (p.isBottle) grandBottleTotal += rowSum;
-      html += `<td style="font-weight:700;">${rowSum}</td></tr>`;
-    });
+      const grandBottleNet = monthMainTotal + monthExtraTotal;
+      footHtml += `<td class="py-2 px-1.5 border border-slate-300 text-center bg-emerald-200 text-emerald-950 text-sm">
+        ${grandBottleNet}
+      </td></tr>`;
 
-    html += `<tr class="row-total"><td class="col-name">รวมยอดขวดทั้งหมด (ไม่รวมน้ำส้ม)</td>`;
-    for (let d = 1; d <= 31; d++) {
-      html += `<td>${dailyBottleTotals[d] > 0 ? dailyBottleTotals[d] : '-'}</td>`;
+      tfoot.innerHTML = footHtml;
+
+      // อัปเดตการ์ดสรุปด้านบน
+      document.getElementById("sum-month-main").textContent = monthMainTotal.toLocaleString();
+      document.getElementById("sum-month-extra").textContent = monthExtraTotal.toLocaleString();
+      document.getElementById("sum-month-net").textContent = grandBottleNet.toLocaleString();
+      document.getElementById("sum-month-orange").textContent = monthOrangeTotal.toLocaleString();
     }
-    html += `<td>${grandBottleTotal}</td></tr></tbody>`;
 
-    document.getElementById("report-table").innerHTML = html;
-  }
-</script>
+    function formatThaiMonth(monthKey) {
+      const [y, m] = monthKey.split("-");
+      const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+      return `${thaiMonths[parseInt(m, 10) - 1]} ${parseInt(y, 10) + 543}`;
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.className = `fixed bottom-5 right-5 px-4 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-300 z-50 ${isError ? 'bg-red-600 text-white' : 'bg-slate-900 text-white'}`;
+      setTimeout(() => {
+        toast.classList.add("translate-y-20", "opacity-0");
+      }, 3000);
+    }
+  </script>
 </body>
 </html>
